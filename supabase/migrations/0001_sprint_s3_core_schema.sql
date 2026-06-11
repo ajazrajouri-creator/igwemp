@@ -16,12 +16,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- RLS Helper: Get Tenant ID for current session
-CREATE OR REPLACE FUNCTION get_current_tenant_id()
-RETURNS uuid AS $$
-  -- For Sprint S3, lookup from user_accounts stub
-  SELECT tenant_id FROM public.user_accounts WHERE supabase_auth_id = auth.uid() LIMIT 1;
-$$ LANGUAGE sql STABLE SECURITY DEFINER;
 
 -- 3. Tenants
 CREATE TABLE public.tenants (
@@ -52,6 +46,13 @@ CREATE TABLE public.user_accounts (
   updated_at timestamptz NOT NULL DEFAULT now(),
   CONSTRAINT user_accounts_auth_id_key UNIQUE (supabase_auth_id)
 );
+
+-- RLS Helper: Get Tenant ID for current session
+CREATE OR REPLACE FUNCTION get_current_tenant_id()
+RETURNS uuid AS $$
+  -- For Sprint S3, lookup from user_accounts stub
+  SELECT tenant_id FROM public.user_accounts WHERE supabase_auth_id = auth.uid() LIMIT 1;
+$$ LANGUAGE sql STABLE SECURITY DEFINER;
 
 ALTER TABLE public.user_accounts ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "tenant_isolation_policy" ON public.user_accounts
