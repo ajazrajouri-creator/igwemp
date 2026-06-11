@@ -1,0 +1,245 @@
+// ============================================================
+// IGWEMP — Auth Context
+// Wraps Supabase Auth with user account + role data
+// ============================================================
+
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import type { Session, User } from '@supabase/supabase-js';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import type { UserAccount, RoleAssignment, SectionMembership } from '../../types';
+
+// ─── Dev Mode Flag ────────────────────────────────────────────
+// When Supabase is not configured, run with mock data
+const DEV_MODE = !isSupabaseConfigured;
+
+// ─── Mock data for Phase 1 dev (before Supabase schema) ──────
+const MOCK_USER: UserAccount = {
+  user_id: 'user-ceo-001',
+  tenant_id: 'sed-tenant-001',
+  party_id: 'party-001',
+  supabase_auth_id: 'mock-auth-001',
+  username: 'ceo.anantnag',
+  is_active: true,
+  is_mfa_enabled: true,
+  last_login_at: new Date().toISOString(),
+  created_at: '2026-01-01T00:00:00Z',
+  updated_at: new Date().toISOString(),
+  party: {
+    party_id: 'party-001',
+    tenant_id: 'sed-tenant-001',
+    party_type: 'PERSON',
+    display_name: 'Abdul Karim',
+    aadhaar_hash: null,
+    pan_hash: null,
+    dob: '1978-03-15',
+    gender: 'MALE',
+    mobile: '+91-9419000001',
+    email: 'ceo.anantnag@jksed.gov.in',
+    deleted_at: null,
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+  },
+  role_assignments: [
+    {
+      assignment_id: 'ra-001',
+      tenant_id: 'sed-tenant-001',
+      user_id: 'user-ceo-001',
+      role_code: 'CEO',
+      office_id: 'office-ceo-anantnag',
+      section_id: null,
+      effective_from: '2024-08-01',
+      effective_to: null,
+      created_at: '2024-08-01T00:00:00Z',
+    },
+  ],
+};
+
+const MOCK_ROLE_ASSIGNMENT: RoleAssignment = {
+  assignment_id: 'ra-001',
+  tenant_id: 'sed-tenant-001',
+  user_id: 'user-ceo-001',
+  role_code: 'CEO',
+  office_id: 'office-ceo-anantnag',
+  section_id: null,
+  effective_from: '2024-08-01',
+  effective_to: null,
+  created_at: '2024-08-01T00:00:00Z',
+};
+
+// ─── Context Types ────────────────────────────────────────────
+interface AuthContextValue {
+  session: Session | null;
+  supabaseUser: User | null;
+  user: UserAccount | null;
+  primaryRole: RoleAssignment | null;
+  sectionMemberships: SectionMembership[];
+  isLoading: boolean;
+  isAuthenticated: boolean;
+
+  // Actions
+  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signOut: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+
+  // Permission helpers
+  hasRole: (roleCode: string) => boolean;
+  hasAnyRole: (roleCodes: string[]) => boolean;
+  isSectionMember: (sectionId: string) => boolean;
+  isSectionHead: (sectionId: string) => boolean;
+}
+
+// ─── Dev Mode Flag ────────────────────────────────────────────
+const DEV_MODE = import.meta.env.DEV && (!isSupabaseConfigured);
+
+// ─── Context ──────────────────────────────────────────────────
+const AuthContext = createContext<AuthContextValue | null>(null);
+
+// ─── Provider ─────────────────────────────────────────────────
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [session, setSession] = useState<Session | null>(null);
+  const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserAccount | null>(DEV_MODE ? MOCK_USER : null);
+  const [primaryRole, setPrimaryRole] = useState<RoleAssignment | null>(DEV_MODE ? MOCK_ROLE_ASSIGNMENT : null);
+  const [sectionMemberships, setSectionMemberships] = useState<SectionMembership[]>([]);
+  const [isLoading, setIsLoading] = useState(!DEV_MODE);
+
+  const loadUserAccount = useCallback(async (authUser: User) => {
+    if (DEV_MODE) return;
+    try {
+      const { data, error } = await supabase
+        .from('user_accounts')
+        .select(`
+          *,
+          party:parties(*),
+          role_assignments(*),
+          section_memberships(*)
+        `)
+        .eq('supabase_auth_id', authUser.id)
+        .single();
+
+      if (error) throw error;
+      if (data) {
+        setUser(data as UserAccount);
+        const roles = (data.role_assignments as RoleAssignment[]) || [];
+        const now = new Date().toISOString();
+        const activeRole = roles.find(
+          (r) => r.effective_from <= now && (!r.effective_to || r.effective_to > now)
+        );
+        setPrimaryRole(activeRole || null);
+        setSectionMemberships((data.section_memberships as SectionMembership[]) || []);
+      }
+    } catch (err) {
+      console.error('[AuthContext] Failed to load user account:', err);
+    }
+  }, []);
+
+  const refreshUser = useCallback(async () => {
+    if (supabaseUser) await loadUserAccount(supabaseUser);
+  }, [supabaseUser, loadUserAccount]);
+
+  useEffect(() => {
+    if (DEV_MODE) return;
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setSupabaseUser(session?.user ?? null);
+      if (session?.user) loadUserAccount(session.user);
+      setIsLoading(false);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setSupabaseUser(session?.user ?? null);
+      if (session?.user) {
+        loadUserAccount(session.user);
+      } else {
+        setUser(null);
+        setPrimaryRole(null);
+        setSectionMemberships([]);
+      }
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [loadUserAccount]);
+
+  const signIn = async (email: string, password: string): Promise<{ error: string | null }> => {
+    if (DEV_MODE) {
+      // In dev mode, any credentials work
+      setUser(MOCK_USER);
+      setPrimaryRole(MOCK_ROLE_ASSIGNMENT);
+      return { error: null };
+    }
+    setIsLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setIsLoading(false);
+    return { error: error?.message || null };
+  };
+
+  const signOut = async () => {
+    if (DEV_MODE) {
+      setUser(null);
+      setPrimaryRole(null);
+      return;
+    }
+    await supabase.auth.signOut();
+  };
+
+  const hasRole = (roleCode: string): boolean => {
+    if (!user?.role_assignments) return false;
+    const now = new Date().toISOString();
+    return user.role_assignments.some(
+      (r) => r.role_code === roleCode
+        && r.effective_from <= now
+        && (!r.effective_to || r.effective_to > now)
+    );
+  };
+
+  const hasAnyRole = (roleCodes: string[]): boolean =>
+    roleCodes.some((code) => hasRole(code));
+
+  const isSectionMember = (sectionId: string): boolean =>
+    sectionMemberships.some(
+      (m) => m.section_id === sectionId && (!m.effective_to || m.effective_to > new Date().toISOString())
+    );
+
+  const isSectionHead = (sectionId: string): boolean =>
+    sectionMemberships.some(
+      (m) =>
+        m.section_id === sectionId &&
+        m.section_role === 'HEAD' &&
+        (!m.effective_to || m.effective_to > new Date().toISOString())
+    );
+
+  const isAuthenticated = DEV_MODE ? !!user : !!session && !!user;
+
+  return (
+    <AuthContext.Provider
+      value={{
+        session,
+        supabaseUser,
+        user,
+        primaryRole,
+        sectionMemberships,
+        isLoading,
+        isAuthenticated,
+        signIn,
+        signOut,
+        refreshUser,
+        hasRole,
+        hasAnyRole,
+        isSectionMember,
+        isSectionHead,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// ─── Hook ─────────────────────────────────────────────────────
+export function useAuth(): AuthContextValue {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  return ctx;
+}

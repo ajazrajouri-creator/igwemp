@@ -1,0 +1,65 @@
+name: Supabase CI DB Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  db-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Project Dependencies
+        run: npm ci
+
+      - name: Create .env files from templates
+        run: |
+          cp .env.example .env
+          cp .env.example .env.test
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start Supabase Local Stack
+        run: supabase start
+
+      - name: Reset Database and Apply Migrations & Seeds
+        run: supabase db reset
+
+      - name: Run pgTAP Database Tests
+        run: supabase test db
+
+      - name: Serve Edge Functions (Background)
+        run: supabase functions serve employee-import &
+        
+      - name: Wait for Edge Functions to start
+        run: sleep 5
+
+      - name: Run Edge Function Integration Test (Deno/Node)
+        run: npx tsx scripts/ci_integration_test.ts
+
+      - name: Run Vitest (Frontend & RPC Mocks)
+        run: npx vitest run
+
+      - name: Upload Logs on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-logs
+          path: supabase/logs/
+
+      - name: Stop Supabase Stack
+        if: always()
+        run: supabase stop

@@ -1,0 +1,283 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   IGWEMP — Global Design System
+   ============================================================ */
+
+@layer base {
+  :root {
+    --color-brand:        238 70% 55%;
+    --color-surface-0:    224 20% 6%;
+    --color-surface-1:    224 18% 9%;
+    --color-surface-2:    224 16% 12%;
+    --color-surface-3:    224 14% 16%;
+    --color-surface-4:    224 12% 20%;
+    --color-ink-primary:  220 20% 95%;
+    --color-ink-secondary:220 10% 70%;
+    --color-ink-muted:    220 8% 50%;
+  }
+
+  * {
+    @apply border-surface-4;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface-1 text-ink-primary font-sans;
+    min-height: 100vh;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(224 20% 6%);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(224 12% 25%);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(224 12% 35%);
+  }
+
+  h1 { @apply text-2xl font-bold text-ink-primary tracking-tight; }
+  h2 { @apply text-xl font-semibold text-ink-primary tracking-tight; }
+  h3 { @apply text-lg font-semibold text-ink-primary; }
+  h4 { @apply text-base font-medium text-ink-primary; }
+
+  a {
+    @apply text-brand-400 hover:text-brand-300 transition-colors;
+    text-decoration: none;
+  }
+}
+
+@layer components {
+
+  /* ─── Cards ─────────────────────────────────────────────── */
+  .card {
+    @apply bg-surface-2 border border-surface-4 rounded-lg shadow-card;
+  }
+  .card-hover {
+    @apply card transition-all duration-200 hover:border-surface-5 hover:shadow-card-hover hover:-translate-y-0.5;
+  }
+  .card-body {
+    @apply p-4;
+  }
+  .card-header {
+    @apply px-4 pt-4 pb-3 border-b border-surface-4;
+  }
+
+  /* ─── Buttons ────────────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium
+           rounded-md transition-all duration-150 cursor-pointer select-none
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-brand-600 text-white hover:bg-brand-500 active:bg-brand-700 shadow-glow-sm;
+  }
+  .btn-secondary {
+    @apply btn bg-surface-3 text-ink-primary border border-surface-5 hover:bg-surface-4 active:bg-surface-3;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-ink-secondary hover:bg-surface-3 hover:text-ink-primary;
+  }
+  .btn-danger {
+    @apply btn bg-red-900/50 text-red-400 border border-red-800/60 hover:bg-red-900/70;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+  .btn-icon {
+    @apply btn p-2 aspect-square;
+  }
+
+  /* ─── Badges / Pills ─────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border;
+  }
+  .badge-overdue  { @apply badge bg-red-500/15 text-red-400 border-red-500/30; }
+  .badge-today    { @apply badge bg-orange-500/15 text-orange-400 border-orange-500/30; }
+  .badge-week     { @apply badge bg-yellow-500/15 text-yellow-400 border-yellow-500/30; }
+  .badge-upcoming { @apply badge bg-blue-500/15 text-blue-400 border-blue-500/30; }
+  .badge-success  { @apply badge bg-green-500/15 text-green-400 border-green-500/30; }
+  .badge-default  { @apply badge bg-surface-4 text-ink-muted border-surface-5; }
+
+  /* ─── Form Elements ──────────────────────────────────────── */
+  .input {
+    @apply w-full px-3 py-2 bg-surface-3 border border-surface-4 rounded-md
+           text-sm text-ink-primary placeholder:text-ink-disabled
+           focus:outline-none focus:ring-2 focus:ring-brand-500/40 focus:border-brand-600
+           transition-colors duration-150
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .input-label {
+    @apply block text-xs font-medium text-ink-secondary mb-1.5;
+  }
+  .input-error {
+    @apply border-red-700 focus:ring-red-500/30 focus:border-red-600;
+  }
+  .input-hint {
+    @apply text-xs text-ink-muted mt-1;
+  }
+  .input-error-msg {
+    @apply text-xs text-red-400 mt-1;
+  }
+  .select {
+    @apply input appearance-none bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 10px center;
+    padding-right: 32px;
+  }
+  .textarea {
+    @apply input resize-none;
+  }
+
+  /* ─── Sidebar ─────────────────────────────────────────────── */
+  .sidebar-nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium text-ink-secondary
+           hover:bg-surface-3 hover:text-ink-primary transition-all duration-150 cursor-pointer;
+  }
+  .sidebar-nav-item.active {
+    @apply bg-brand-900/60 text-brand-300 border border-brand-800/40;
+  }
+  .sidebar-nav-item.active .nav-icon {
+    @apply text-brand-400;
+  }
+  .sidebar-section-label {
+    @apply px-3 py-1.5 text-[10px] font-semibold text-ink-disabled uppercase tracking-widest;
+  }
+
+  /* ─── Tables ─────────────────────────────────────────────── */
+  .data-table {
+    @apply w-full text-sm;
+  }
+  .data-table th {
+    @apply px-4 py-3 text-left text-xs font-semibold text-ink-muted uppercase tracking-wider
+           bg-surface-2 border-b border-surface-4;
+  }
+  .data-table td {
+    @apply px-4 py-3 text-ink-secondary border-b border-surface-4/50;
+  }
+  .data-table tr:hover td {
+    @apply bg-surface-3/50 text-ink-primary;
+  }
+
+  /* ─── Work Queue Priority Lanes ──────────────────────────── */
+  .priority-lane {
+    @apply rounded-lg border overflow-hidden;
+  }
+  .priority-lane-header {
+    @apply flex items-center justify-between px-4 py-2.5 text-sm font-semibold cursor-pointer;
+  }
+  .priority-lane-overdue  { @apply priority-lane border-red-800/40 bg-red-950/20; }
+  .priority-lane-today    { @apply priority-lane border-orange-800/40 bg-orange-950/20; }
+  .priority-lane-week     { @apply priority-lane border-yellow-800/40 bg-yellow-950/20; }
+  .priority-lane-upcoming { @apply priority-lane border-blue-800/40 bg-blue-950/20; }
+
+  /* ─── Work Queue Item Card ───────────────────────────────── */
+  .work-item {
+    @apply flex items-start gap-3 px-4 py-3 border-b border-surface-4/40 last:border-0
+           hover:bg-surface-3/40 transition-colors duration-100 cursor-pointer;
+  }
+
+  /* ─── Skeleton Loading ────────────────────────────────────── */
+  .skeleton {
+    @apply bg-surface-3 rounded animate-pulse;
+    background: linear-gradient(90deg, hsl(224 16% 12%) 25%, hsl(224 14% 16%) 50%, hsl(224 16% 12%) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s linear infinite;
+  }
+
+  /* ─── Stat Card ──────────────────────────────────────────── */
+  .stat-card {
+    @apply card p-4 flex flex-col gap-1;
+  }
+  .stat-value {
+    @apply text-2xl font-bold text-ink-primary;
+  }
+  .stat-label {
+    @apply text-xs text-ink-muted font-medium uppercase tracking-wide;
+  }
+  .stat-delta-up   { @apply text-xs text-green-400 font-medium; }
+  .stat-delta-down { @apply text-xs text-red-400 font-medium; }
+
+  /* ─── Notification ───────────────────────────────────────── */
+  .notification-item {
+    @apply flex gap-3 px-4 py-3 border-b border-surface-4/50 hover:bg-surface-3/50
+           transition-colors cursor-pointer;
+  }
+  .notification-item.unread {
+    @apply bg-brand-950/30;
+  }
+
+  /* ─── Page Header ────────────────────────────────────────── */
+  .page-header {
+    @apply flex items-start justify-between gap-4 mb-6;
+  }
+  .page-title {
+    @apply text-xl font-bold text-ink-primary;
+  }
+  .page-subtitle {
+    @apply text-sm text-ink-muted mt-0.5;
+  }
+
+  /* ─── Section dividers ───────────────────────────────────── */
+  .divider {
+    @apply border-t border-surface-4 my-4;
+  }
+
+  /* ─── Empty State ─────────────────────────────────────────── */
+  .empty-state {
+    @apply flex flex-col items-center justify-center gap-3 py-16 text-center;
+  }
+  .empty-state-icon {
+    @apply text-4xl mb-2 opacity-40;
+  }
+  .empty-state-title {
+    @apply text-base font-semibold text-ink-secondary;
+  }
+  .empty-state-desc {
+    @apply text-sm text-ink-muted max-w-xs;
+  }
+
+  /* ─── Delegation Banner [ADJ-04] ─────────────────────────── */
+  .delegation-banner {
+    @apply flex items-center gap-3 px-4 py-2.5 bg-brand-900/50 border-b border-brand-800/40
+           text-sm text-brand-300;
+  }
+}
+
+@layer utilities {
+  .text-gradient-brand {
+    @apply bg-gradient-to-r from-brand-400 to-brand-300 bg-clip-text text-transparent;
+  }
+  .bg-glass {
+    backdrop-filter: blur(12px);
+    background: hsl(224 18% 9% / 0.8);
+    border: 1px solid hsl(224 12% 20% / 0.5);
+  }
+  .animate-enter {
+    @apply animate-fade-in;
+  }
+  .animate-slide {
+    @apply animate-slide-up;
+  }
+}
