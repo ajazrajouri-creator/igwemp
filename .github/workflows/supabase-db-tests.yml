@@ -20,7 +20,8 @@ jobs:
           node-version: 20
 
       - name: Install Project Dependencies
-        run: npm ci
+        run: npm install
+
 
       - name: Create .env files from templates
         run: |
