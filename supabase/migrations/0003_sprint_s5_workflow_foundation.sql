@@ -274,8 +274,9 @@ BEGIN
     EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY;', table_name);
     
     -- Documents, versions, links shouldn't strictly require tenant_id for linking purposes but our tables have it or rely on parent
-    IF table_name NOT IN ('document_versions', 'document_links', 'workflow_states', 'workflow_transitions', 'form_fields', 'template_tasks') THEN
+    IF table_name NOT IN ('document_versions', 'document_links', 'workflow_versions', 'workflow_states', 'workflow_transitions', 'form_fields', 'template_tasks') THEN
       EXECUTE format('CREATE POLICY "tenant_isolation_policy" ON public.%I FOR ALL USING (tenant_id = get_current_tenant_id());', table_name);
+
     END IF;
 
     EXECUTE format('CREATE TRIGGER trg_audit_%I AFTER INSERT OR UPDATE OR DELETE ON public.%I FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();', table_name, table_name);
