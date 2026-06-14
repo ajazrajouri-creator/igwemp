@@ -36,7 +36,7 @@ SELECT has_table('public', 'role_assignment_scopes', 'role_assignment_scopes exi
 -- Duplicate Employee Code Rejection
 SELECT throws_ok(
     $$ INSERT INTO public.employee_profiles (tenant_id, person_party_id, employee_code) VALUES ('00000000-0000-4000-a000-000000000001', '60000000-0000-4000-a000-000000000001', 'DUP001'); INSERT INTO public.employee_profiles (tenant_id, person_party_id, employee_code) VALUES ('00000000-0000-4000-a000-000000000001', '60000000-0000-4000-a000-000000000002', 'DUP001'); $$,
-    23505, -- unique_violation
+    '23505', -- unique_violation
     NULL,
     'Duplicate employee code should be rejected'
 );
@@ -44,7 +44,7 @@ SELECT throws_ok(
 -- Duplicate Person-Party mapping
 SELECT throws_ok(
     $$ INSERT INTO public.employee_profiles (tenant_id, person_party_id, employee_code) VALUES ('00000000-0000-4000-a000-000000000001', '60000000-0000-4000-a000-000000000001', 'EMP001'); INSERT INTO public.employee_profiles (tenant_id, person_party_id, employee_code) VALUES ('00000000-0000-4000-a000-000000000001', '60000000-0000-4000-a000-000000000001', 'EMP002'); $$,
-    23505, -- unique_violation
+    '23505', -- unique_violation
     NULL,
     'Duplicate person-party mapping should be rejected'
 );
@@ -60,7 +60,7 @@ SELECT throws_ok(
 -- Overlapping Substantive Postings
 SELECT throws_ok(
     $$ INSERT INTO public.employee_postings (tenant_id, employee_id, office_id, posting_nature, effective_from) VALUES ('00000000-0000-4000-a000-000000000001', '00000000-0000-0000-0000-000000000000', '40000000-0000-4000-a000-000000000001', 'SUBSTANTIVE', '2023-01-01'); INSERT INTO public.employee_postings (tenant_id, employee_id, office_id, posting_nature, effective_from) VALUES ('00000000-0000-4000-a000-000000000001', '00000000-0000-0000-0000-000000000000', '40000000-0000-4000-a000-000000000002', 'SUBSTANTIVE', '2024-01-01'); $$,
-    23P01, -- exclusion_violation
+    '23P01', -- exclusion_violation
     NULL,
     'Overlapping active substantive postings should be rejected'
 );

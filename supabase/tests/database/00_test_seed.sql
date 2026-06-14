@@ -32,7 +32,7 @@ INSERT INTO public.scope_dimensions (id, tenant_id, code, name, entity_type, mas
 ON CONFLICT (id) DO NOTHING;
 
 -- 3.5. Hierarchy Levels
-INSERT INTO public.hierarchy_levels (id, tenant_id, level_code, name, hierarchy_weight) VALUES 
+INSERT INTO public.hierarchy_levels (id, tenant_id, level_code, level_name, hierarchy_weight) VALUES 
 ('35000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'STATE', 'State Level', 10),
 ('35000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000001', 'DISTRICT', 'District Level', 20),
 ('35000000-0000-4000-a000-000000000003', '00000000-0000-4000-a000-000000000001', 'ZONAL', 'Zonal Level', 30),
