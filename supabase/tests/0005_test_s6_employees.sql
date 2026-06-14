@@ -19,12 +19,12 @@ BEGIN
     INSERT INTO public.parties (tenant_id, party_type, display_name) VALUES (v_tenant_id, 'PERSON', 'Test Person') RETURNING id INTO v_party_id;
     INSERT INTO public.person_parties (party_id, first_name) VALUES (v_party_id, 'Test');
     
-    INSERT INTO public.employee_profiles (tenant_id, person_id, employee_code) VALUES (v_tenant_id, v_party_id, 'EMP001') RETURNING id INTO v_employee_id;
+    INSERT INTO public.employee_profiles (tenant_id, person_party_id, employee_code) VALUES (v_tenant_id, v_party_id, 'EMP001') RETURNING id INTO v_employee_id;
     
-    -- Second insert for the same person_id should fail
-    INSERT INTO public.employee_profiles (tenant_id, person_id, employee_code) VALUES (v_tenant_id, v_party_id, 'EMP002');
+    -- Second insert for the same person_party_id should fail
+    INSERT INTO public.employee_profiles (tenant_id, person_party_id, employee_code) VALUES (v_tenant_id, v_party_id, 'EMP002');
     
-    RAISE EXCEPTION 'TEST FAILED: Unique constraint on (tenant_id, person_id) did not fire.';
+    RAISE EXCEPTION 'TEST FAILED: Unique constraint on (tenant_id, person_party_id) did not fire.';
   EXCEPTION WHEN unique_violation THEN
     -- Passed
   END;

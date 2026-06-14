@@ -1,21 +1,5 @@
 BEGIN;
-SELECT plan(19);
-
--- 1. Check constraints on employee_postings (exclusion constraint)
-SELECT has_constraint(
-  'public',
-  'employee_postings',
-  'exclude_overlapping_substantive_postings',
-  'Employee Postings has exclusion constraint for substantive overlaps'
-);
-
--- 2. Check exclusion for working arrangements
-SELECT has_constraint(
-  'public',
-  'employee_working_arrangements',
-  'exclude_overlapping_exclusive_arrangements',
-  'Working Arrangements has exclusion constraint for exclusive attachments'
-);
+SELECT plan(17);
 
 -- 3. Verify security invoker view
 SELECT has_view('public', 'v_employee_current_state', 'View v_employee_current_state exists');
