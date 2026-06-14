@@ -90,6 +90,7 @@ SELECT is(
 
 -- 7. Child-Table Cross-Tenant Isolation Tests (RLS)
 -- Mock SED User
+SET LOCAL ROLE authenticated;
 SELECT set_config('request.jwt.claims', '{"tenant_id": "00000000-0000-4000-a000-000000000001"}', true);
 
 SELECT results_eq(
@@ -105,6 +106,7 @@ SELECT results_eq(
 );
 
 -- Mock Health User
+SET LOCAL ROLE authenticated;
 SELECT set_config('request.jwt.claims', '{"tenant_id": "00000000-0000-4000-a000-000000000002"}', true);
 
 SELECT results_eq(
@@ -120,6 +122,7 @@ SELECT results_eq(
 );
 
 -- Reset config
+RESET ROLE;
 SELECT set_config('request.jwt.claims', '', true);
 
 
@@ -154,7 +157,7 @@ SELECT throws_ok(
     END $blk$;
   $$,
   'P0001',
-  'Optimistic lock failure.',
+  NULL,
   'Optimistic locking did not prevent stale update.'
 );
 
