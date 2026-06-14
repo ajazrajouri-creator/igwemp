@@ -48,9 +48,9 @@ INSERT INTO public.offices (id, tenant_id, office_name, office_code, path, level
 ON CONFLICT (id) DO NOTHING;
 
 -- 5. Sections
-INSERT INTO public.sections (id, tenant_id, name) VALUES 
-('50000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'Establishment'),
-('50000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000001', 'Academic')
+INSERT INTO public.sections (id, tenant_id, office_id, section_type, section_name) VALUES 
+('50000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', '40000000-0000-4000-a000-000000000001', 'ESTABLISHMENT', 'Establishment Section'),
+('50000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000001', '40000000-0000-4000-a000-000000000001', 'ACADEMIC', 'Academic Section')
 ON CONFLICT (id) DO NOTHING;
 
 -- 6. Identity Users (Parties + Accounts + Roles)
