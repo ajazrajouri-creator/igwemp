@@ -59,7 +59,21 @@ SELECT throws_ok(
 
 -- Overlapping Substantive Postings
 SELECT throws_ok(
-    $$ INSERT INTO public.employee_postings (tenant_id, employee_id, office_id, posting_nature, effective_from) VALUES ('00000000-0000-4000-a000-000000000001', '00000000-0000-0000-0000-000000000000', '40000000-0000-4000-a000-000000000001', 'SUBSTANTIVE', '2023-01-01'); INSERT INTO public.employee_postings (tenant_id, employee_id, office_id, posting_nature, effective_from) VALUES ('00000000-0000-4000-a000-000000000001', '00000000-0000-0000-0000-000000000000', '40000000-0000-4000-a000-000000000002', 'SUBSTANTIVE', '2024-01-01'); $$,
+    $$ 
+    DO $blk$
+    DECLARE
+      v_tenant_id uuid := '00000000-0000-4000-a000-000000000001';
+      v_party_id uuid;
+      v_employee_id uuid;
+    BEGIN
+      INSERT INTO public.parties (tenant_id, party_type, display_name) VALUES (v_tenant_id, 'PERSON', 'Test Person') RETURNING id INTO v_party_id;
+      INSERT INTO public.person_parties (party_id, first_name) VALUES (v_party_id, 'Test');
+      INSERT INTO public.employee_profiles (tenant_id, person_party_id, employee_code) VALUES (v_tenant_id, v_party_id, 'EMP_POST_1') RETURNING id INTO v_employee_id;
+      
+      INSERT INTO public.employee_postings (tenant_id, employee_id, office_id, posting_nature, effective_from) VALUES (v_tenant_id, v_employee_id, '40000000-0000-4000-a000-000000000001', 'SUBSTANTIVE', '2023-01-01'); 
+      INSERT INTO public.employee_postings (tenant_id, employee_id, office_id, posting_nature, effective_from) VALUES (v_tenant_id, v_employee_id, '40000000-0000-4000-a000-000000000002', 'SUBSTANTIVE', '2024-01-01'); 
+    END $blk$;
+    $$,
     '23P01', -- exclusion_violation
     NULL,
     'Overlapping active substantive postings should be rejected'
@@ -119,15 +133,16 @@ SELECT throws_ok(
       v_employee_id uuid;
       v_req_id uuid;
       v_version int;
+      v_user_id uuid;
     BEGIN
       INSERT INTO public.parties (tenant_id, party_type, display_name) VALUES (v_tenant_id, 'PERSON', 'Test Person') RETURNING id INTO v_party_id;
       INSERT INTO public.person_parties (party_id, first_name) VALUES (v_party_id, 'Test');
       INSERT INTO public.employee_profiles (tenant_id, person_party_id, employee_code) VALUES (v_tenant_id, v_party_id, 'EMP_OPT_1') RETURNING id INTO v_employee_id;
       
-      INSERT INTO public.user_accounts (tenant_id, username, status) VALUES (v_tenant_id, 'testuser_opt', 'ACTIVE');
+      INSERT INTO public.user_accounts (tenant_id, supabase_auth_id) VALUES (v_tenant_id, 'd0000000-0000-4000-a000-000000000001') RETURNING id INTO v_user_id;
       
       INSERT INTO public.employee_change_requests (tenant_id, employee_id, requested_by, request_type, status)
-        VALUES (v_tenant_id, v_employee_id, (SELECT id FROM public.user_accounts WHERE username = 'testuser_opt'), 'PROFILE_UPDATE', 'APPROVED')
+        VALUES (v_tenant_id, v_employee_id, v_user_id, 'PROFILE_UPDATE', 'APPROVED')
         RETURNING id INTO v_req_id;
         
       SELECT record_version INTO v_version FROM public.employee_profiles WHERE id = v_employee_id;

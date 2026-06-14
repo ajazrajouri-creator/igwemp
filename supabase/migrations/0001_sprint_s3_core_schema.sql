@@ -50,8 +50,10 @@ CREATE TABLE public.user_accounts (
 -- RLS Helper: Get Tenant ID for current session
 CREATE OR REPLACE FUNCTION get_current_tenant_id()
 RETURNS uuid AS $$
-  -- For Sprint S3, lookup from user_accounts stub
-  SELECT tenant_id FROM public.user_accounts WHERE supabase_auth_id = auth.uid() LIMIT 1;
+  SELECT COALESCE(
+    (current_setting('request.jwt.claims', true)::jsonb ->> 'tenant_id')::uuid,
+    (SELECT tenant_id FROM public.user_accounts WHERE supabase_auth_id = auth.uid() LIMIT 1)
+  );
 $$ LANGUAGE sql STABLE SECURITY DEFINER;
 
 ALTER TABLE public.user_accounts ENABLE ROW LEVEL SECURITY;
