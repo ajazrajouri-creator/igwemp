@@ -139,7 +139,7 @@ SELECT throws_ok(
     END $blk$;
   $$,
   'P0001',
-  '%Optimistic locking failure%',
+  'Optimistic lock failure.',
   'Optimistic locking did not prevent stale update.'
 );
 
