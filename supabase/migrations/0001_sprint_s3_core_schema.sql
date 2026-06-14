@@ -61,7 +61,7 @@ CREATE POLICY "tenant_isolation_policy" ON public.user_accounts
 -- 5. Audit Framework
 CREATE TABLE public.audit_logs (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-  tenant_id uuid NOT NULL REFERENCES public.tenants(id) ON DELETE CASCADE,
+  tenant_id uuid REFERENCES public.tenants(id) ON DELETE CASCADE,
   entity_type text NOT NULL,
   entity_id uuid NOT NULL,
   action text NOT NULL,
@@ -88,14 +88,14 @@ BEGIN
   
   IF TG_OP = 'INSERT' THEN
     v_new := row_to_json(NEW);
-    v_tenant_id := NEW.tenant_id;
+    v_tenant_id := COALESCE(get_current_tenant_id(), (v_new->>'tenant_id')::uuid);
   ELSIF TG_OP = 'UPDATE' THEN
     v_old := row_to_json(OLD);
     v_new := row_to_json(NEW);
-    v_tenant_id := NEW.tenant_id;
+    v_tenant_id := COALESCE(get_current_tenant_id(), (v_new->>'tenant_id')::uuid);
   ELSIF TG_OP = 'DELETE' THEN
     v_old := row_to_json(OLD);
-    v_tenant_id := OLD.tenant_id;
+    v_tenant_id := COALESCE(get_current_tenant_id(), (v_old->>'tenant_id')::uuid);
   END IF;
 
   INSERT INTO public.audit_logs (tenant_id, entity_type, entity_id, action, old_values, new_values, performed_by)
