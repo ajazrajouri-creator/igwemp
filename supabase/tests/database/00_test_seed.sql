@@ -91,7 +91,7 @@ INSERT INTO public.document_versions (id, document_id, version_number, file_path
 ('90000000-0000-4000-a000-000000000002', '80000000-0000-4000-a000-000000000002', 1, 'path/health', 1024, 'application/pdf')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.workflow_definitions (id, tenant_id, code, name, category) VALUES 
+INSERT INTO public.workflow_definitions (id, tenant_id, code, name, module) VALUES 
 ('a0000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'SED_WF', 'SED Workflow', 'HR'),
 ('a0000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000002', 'HEALTH_WF', 'Health Workflow', 'HR')
 ON CONFLICT (id) DO NOTHING;
