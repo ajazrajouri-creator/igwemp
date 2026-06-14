@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(15);
+SELECT plan(19);
 
 -- 1. Check constraints on employee_postings (exclusion constraint)
 SELECT has_constraint(
@@ -72,6 +72,41 @@ SELECT is(
     false,
     'unresolved SCHOOL_TYPE scope fails closed'
 );
+
+
+-- 7. Child-Table Cross-Tenant Isolation Tests (RLS)
+-- Mock SED User
+SELECT set_config('request.jwt.claims', '{"tenant_id": "00000000-0000-4000-a000-000000000001"}', true);
+
+SELECT results_eq(
+  'SELECT id FROM public.document_versions',
+  ARRAY['90000000-0000-4000-a000-000000000001'::uuid],
+  'SED user should only see SED document_versions'
+);
+
+SELECT results_eq(
+  'SELECT id FROM public.workflow_versions',
+  ARRAY['b0000000-0000-4000-a000-000000000001'::uuid],
+  'SED user should only see SED workflow_versions'
+);
+
+-- Mock Health User
+SELECT set_config('request.jwt.claims', '{"tenant_id": "00000000-0000-4000-a000-000000000002"}', true);
+
+SELECT results_eq(
+  'SELECT id FROM public.document_versions',
+  ARRAY['90000000-0000-4000-a000-000000000002'::uuid],
+  'Health user should only see Health document_versions'
+);
+
+SELECT results_eq(
+  'SELECT id FROM public.workflow_versions',
+  ARRAY['b0000000-0000-4000-a000-000000000002'::uuid],
+  'Health user should only see Health workflow_versions'
+);
+
+-- Reset config
+SELECT set_config('request.jwt.claims', '', true);
 
 SELECT * FROM finish();
 ROLLBACK;

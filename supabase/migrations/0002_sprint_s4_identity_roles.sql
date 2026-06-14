@@ -36,7 +36,14 @@ CREATE TRIGGER trg_audit_parties AFTER INSERT OR UPDATE OR DELETE ON public.part
 ALTER TABLE public.parties ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "tenant_isolation_policy" ON public.parties FOR ALL USING (tenant_id = get_current_tenant_id());
 ALTER TABLE public.person_parties ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.person_parties FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.parties p WHERE p.id = person_parties.party_id AND p.tenant_id = get_current_tenant_id())
+);
+
 ALTER TABLE public.org_parties ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.org_parties FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.parties p WHERE p.id = org_parties.party_id AND p.tenant_id = get_current_tenant_id())
+);
 
 -- 2. Employee Profile Foundation
 CREATE TABLE public.employee_profiles (
@@ -148,6 +155,9 @@ CREATE TRIGGER trg_audit_role_assignments AFTER INSERT OR UPDATE OR DELETE ON pu
 ALTER TABLE public.roles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.policies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.role_policies ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.role_policies FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.roles r WHERE r.id = role_policies.role_id AND r.tenant_id = get_current_tenant_id())
+);
 ALTER TABLE public.role_assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.role_assignment_scopes ENABLE ROW LEVEL SECURITY;
 
