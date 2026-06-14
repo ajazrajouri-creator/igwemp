@@ -81,14 +81,14 @@ ON CONFLICT (id) DO NOTHING;
 -- For pgTAP tests, we will mock auth.uid() or construct specific accounts dynamically inside tests.
 
 -- 7. Mock Data for Child-Table RLS Testing
-INSERT INTO public.documents (id, tenant_id, title) VALUES 
-('80000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'SED Document'),
-('80000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000002', 'Health Document')
+INSERT INTO public.documents (id, tenant_id, title, document_type) VALUES 
+('80000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'SED Document', 'POLICY'),
+('80000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000002', 'Health Document', 'POLICY')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO public.document_versions (id, document_id, version_number, storage_path) VALUES 
-('90000000-0000-4000-a000-000000000001', '80000000-0000-4000-a000-000000000001', 1, 'path/sed'),
-('90000000-0000-4000-a000-000000000002', '80000000-0000-4000-a000-000000000002', 1, 'path/health')
+INSERT INTO public.document_versions (id, document_id, version_number, file_path, file_size, mime_type) VALUES 
+('90000000-0000-4000-a000-000000000001', '80000000-0000-4000-a000-000000000001', 1, 'path/sed', 1024, 'application/pdf'),
+('90000000-0000-4000-a000-000000000002', '80000000-0000-4000-a000-000000000002', 1, 'path/health', 1024, 'application/pdf')
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.workflow_definitions (id, tenant_id, code, name, category) VALUES 
