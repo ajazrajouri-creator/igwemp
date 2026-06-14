@@ -90,6 +90,7 @@ SELECT is(
 
 -- 7. Child-Table Cross-Tenant Isolation Tests (RLS)
 -- Mock SED User
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO authenticated;
 SET LOCAL ROLE authenticated;
 SELECT set_config('request.jwt.claims', '{"tenant_id": "00000000-0000-4000-a000-000000000001"}', true);
 
