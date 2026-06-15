@@ -1,6 +1,16 @@
 -- Sprint S7: Post Management & Sanctioned Strength (Schema & RLS)
 -- Creates the authoritative row-per-post public.posts table and post census tables.
 
+CREATE OR REPLACE FUNCTION public.get_current_office_id()
+RETURNS uuid AS $$
+  SELECT (current_setting('request.jwt.claims', true)::jsonb ->> 'office_id')::uuid;
+$$ LANGUAGE sql STABLE SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION public.get_current_role()
+RETURNS text AS $$
+  SELECT current_setting('request.jwt.claims', true)::jsonb ->> 'role';
+$$ LANGUAGE sql STABLE SECURITY DEFINER;
+
 -- 1. Create public.posts (Row-per-post authoritative registry)
 CREATE TABLE public.posts (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
