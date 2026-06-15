@@ -33,22 +33,22 @@ BEGIN
   SELECT id INTO v_school_office_id FROM public.offices WHERE office_code = 'MS_EX' LIMIT 1;
 
   -- Seed Master Data Categories
-  INSERT INTO public.master_data_categories (tenant_id, code, name) VALUES (v_tenant_id, 'DESIGNATION', 'Designation') ON CONFLICT (code, tenant_id) DO NOTHING;
-  INSERT INTO public.master_data_categories (tenant_id, code, name) VALUES (v_tenant_id, 'SUBJECT', 'Subject') ON CONFLICT (code, tenant_id) DO NOTHING;
-  INSERT INTO public.master_data_categories (tenant_id, code, name) VALUES (v_tenant_id, 'POST_NATURE', 'Post Nature') ON CONFLICT (code, tenant_id) DO NOTHING;
+  INSERT INTO public.master_data_categories (tenant_id, code, name) VALUES (v_tenant_id, 'DESIGNATION', 'Designation') ON CONFLICT (tenant_id, code) DO NOTHING;
+  INSERT INTO public.master_data_categories (tenant_id, code, name) VALUES (v_tenant_id, 'SUBJECT', 'Subject') ON CONFLICT (tenant_id, code) DO NOTHING;
+  INSERT INTO public.master_data_categories (tenant_id, code, name) VALUES (v_tenant_id, 'POST_NATURE', 'Post Nature') ON CONFLICT (tenant_id, code) DO NOTHING;
   
   -- Seed Master Data Items
   INSERT INTO public.master_data_items (tenant_id, category_id, code, name) 
   SELECT v_tenant_id, id, 'TCHR', 'Teacher' FROM public.master_data_categories WHERE code = 'DESIGNATION'
-  ON CONFLICT (code, category_id, tenant_id) DO NOTHING;
+  ON CONFLICT (category_id, code) DO NOTHING;
   
   INSERT INTO public.master_data_items (tenant_id, category_id, code, name) 
   SELECT v_tenant_id, id, 'GEN', 'General' FROM public.master_data_categories WHERE code = 'SUBJECT'
-  ON CONFLICT (code, category_id, tenant_id) DO NOTHING;
+  ON CONFLICT (category_id, code) DO NOTHING;
 
   INSERT INTO public.master_data_items (tenant_id, category_id, code, name) 
   SELECT v_tenant_id, id, 'PERM', 'Permanent' FROM public.master_data_categories WHERE code = 'POST_NATURE'
-  ON CONFLICT (code, category_id, tenant_id) DO NOTHING;
+  ON CONFLICT (category_id, code) DO NOTHING;
 
   -- Get Master Data
   SELECT i.id INTO v_designation_id FROM public.master_data_items i JOIN public.master_data_categories c ON i.category_id = c.id WHERE i.code = 'TCHR' AND c.code = 'DESIGNATION' LIMIT 1;
