@@ -69,28 +69,28 @@ DECLARE
   v_category text;
 BEGIN
   -- Check designation
-  SELECT category INTO v_category FROM public.master_data_items WHERE id = NEW.designation_id;
+  SELECT c.code INTO v_category FROM public.master_data_categories c JOIN public.master_data_items i ON i.category_id = c.id WHERE i.id = NEW.designation_id;
   IF v_category != 'DESIGNATION' THEN
     RAISE EXCEPTION 'designation_id must point to a DESIGNATION item (found %)', v_category;
   END IF;
   
   -- Check subject
   IF NEW.subject_id IS NOT NULL THEN
-    SELECT category INTO v_category FROM public.master_data_items WHERE id = NEW.subject_id;
+    SELECT c.code INTO v_category FROM public.master_data_categories c JOIN public.master_data_items i ON i.category_id = c.id WHERE i.id = NEW.subject_id;
     IF v_category != 'SUBJECT' THEN
       RAISE EXCEPTION 'subject_id must point to a SUBJECT item (found %)', v_category;
     END IF;
   END IF;
 
   -- Check post_nature
-  SELECT category INTO v_category FROM public.master_data_items WHERE id = NEW.post_nature_id;
+  SELECT c.code INTO v_category FROM public.master_data_categories c JOIN public.master_data_items i ON i.category_id = c.id WHERE i.id = NEW.post_nature_id;
   IF v_category != 'POST_NATURE' THEN
     RAISE EXCEPTION 'post_nature_id must point to a POST_NATURE item (found %)', v_category;
   END IF;
 
   -- Check pay_scale
   IF NEW.pay_scale_id IS NOT NULL THEN
-    SELECT category INTO v_category FROM public.master_data_items WHERE id = NEW.pay_scale_id;
+    SELECT c.code INTO v_category FROM public.master_data_categories c JOIN public.master_data_items i ON i.category_id = c.id WHERE i.id = NEW.pay_scale_id;
     IF v_category != 'PAY_SCALE' THEN
       RAISE EXCEPTION 'pay_scale_id must point to a PAY_SCALE item (found %)', v_category;
     END IF;
@@ -234,15 +234,15 @@ RETURNS trigger AS $$
 DECLARE
   v_category text;
 BEGIN
-  SELECT category INTO v_category FROM public.master_data_items WHERE id = NEW.designation_id;
+  SELECT c.code INTO v_category FROM public.master_data_categories c JOIN public.master_data_items i ON i.category_id = c.id WHERE i.id = NEW.designation_id;
   IF v_category != 'DESIGNATION' THEN RAISE EXCEPTION 'designation_id must point to a DESIGNATION item'; END IF;
   
   IF NEW.subject_id IS NOT NULL THEN
-    SELECT category INTO v_category FROM public.master_data_items WHERE id = NEW.subject_id;
+    SELECT c.code INTO v_category FROM public.master_data_categories c JOIN public.master_data_items i ON i.category_id = c.id WHERE i.id = NEW.subject_id;
     IF v_category != 'SUBJECT' THEN RAISE EXCEPTION 'subject_id must point to a SUBJECT item'; END IF;
   END IF;
 
-  SELECT category INTO v_category FROM public.master_data_items WHERE id = NEW.post_nature_id;
+  SELECT c.code INTO v_category FROM public.master_data_categories c JOIN public.master_data_items i ON i.category_id = c.id WHERE i.id = NEW.post_nature_id;
   IF v_category != 'POST_NATURE' THEN RAISE EXCEPTION 'post_nature_id must point to a POST_NATURE item'; END IF;
 
   RETURN NEW;

@@ -26,15 +26,15 @@ BEGIN
   -- Get context from 00_test_seed
   SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'JK Education Department' LIMIT 1;
   SELECT id INTO v_admin_id FROM public.user_accounts WHERE username = 'zoneadmin1' LIMIT 1;
-  SELECT id INTO v_zone_office_id FROM public.offices WHERE code = 'ZEO-PEERI' LIMIT 1;
+  SELECT id INTO v_zone_office_id FROM public.offices WHERE office_code = 'ZEO-PEERI' LIMIT 1;
   
   SELECT id INTO v_hoi_id FROM public.user_accounts WHERE username = 'hoipeeri1' LIMIT 1;
-  SELECT id INTO v_school_office_id FROM public.offices WHERE code = 'HSS-PEERI' LIMIT 1;
+  SELECT id INTO v_school_office_id FROM public.offices WHERE office_code = 'HSS-PEERI' LIMIT 1;
 
   -- Get Master Data
-  SELECT id INTO v_designation_id FROM public.master_data_items WHERE code = 'TCHR' AND category = 'DESIGNATION' LIMIT 1;
-  SELECT id INTO v_subject_id FROM public.master_data_items WHERE code = 'GEN' AND category = 'SUBJECT' LIMIT 1;
-  SELECT id INTO v_nature_id FROM public.master_data_items WHERE code = 'PERM' AND category = 'POST_NATURE' LIMIT 1;
+  SELECT i.id INTO v_designation_id FROM public.master_data_items i JOIN public.master_data_categories c ON i.category_id = c.id WHERE i.code = 'TCHR' AND c.code = 'DESIGNATION' LIMIT 1;
+  SELECT i.id INTO v_subject_id FROM public.master_data_items i JOIN public.master_data_categories c ON i.category_id = c.id WHERE i.code = 'GEN' AND c.code = 'SUBJECT' LIMIT 1;
+  SELECT i.id INTO v_nature_id FROM public.master_data_items i JOIN public.master_data_categories c ON i.category_id = c.id WHERE i.code = 'PERM' AND c.code = 'POST_NATURE' LIMIT 1;
 
   -- Create Census Cycle as Admin
   SET LOCAL request.jwt.claims TO '{"sub": "test-admin"}';
@@ -107,7 +107,7 @@ DECLARE
   v_emp_2 uuid;
 BEGIN
   SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'JK Education Department' LIMIT 1;
-  SELECT id INTO v_school_office_id FROM public.offices WHERE code = 'HSS-PEERI' LIMIT 1;
+  SELECT id INTO v_school_office_id FROM public.offices WHERE office_code = 'HSS-PEERI' LIMIT 1;
   
   -- Get two posts
   SELECT id INTO v_post_1 FROM public.posts LIMIT 1 OFFSET 0;
@@ -146,7 +146,7 @@ SELECT pass('two employees cannot occupy same physical post concurrently');
 
 -- Assert 5: Vacancy dashboard aggregates
 SELECT results_eq(
-  $$ SELECT sanctioned_strength, filled_strength, vacant_posts FROM public.v_office_vacancy_dashboard WHERE office_id = (SELECT id FROM public.offices WHERE code = 'HSS-PEERI') LIMIT 1 $$,
+  $$ SELECT sanctioned_strength, filled_strength, vacant_posts FROM public.v_office_vacancy_dashboard WHERE office_id = (SELECT id FROM public.offices WHERE office_code = 'HSS-PEERI') LIMIT 1 $$,
   $$ VALUES (3, 1, 2) $$,
   'vacancy view returns correct totals (3 sanctioned, 1 filled, 2 vacant)'
 );
@@ -179,7 +179,7 @@ DECLARE
 BEGIN
   SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'JK Education Department' LIMIT 1;
   SELECT id INTO v_admin_id FROM public.user_accounts WHERE username = 'zoneadmin1' LIMIT 1;
-  SELECT id INTO v_school_office_id FROM public.offices WHERE code = 'HSS-PEERI' LIMIT 1;
+  SELECT id INTO v_school_office_id FROM public.offices WHERE office_code = 'HSS-PEERI' LIMIT 1;
   SELECT id INTO v_designation_id FROM public.master_data_items WHERE code = 'TCHR' LIMIT 1;
   SELECT id INTO v_subject_id FROM public.master_data_items WHERE code = 'GEN' LIMIT 1;
   SELECT id INTO v_nature_id FROM public.master_data_items WHERE code = 'PERM' LIMIT 1;
@@ -236,7 +236,7 @@ SELECT pass('vacant selected post can be abolished');
 
 -- Assert 12: Abolished post excluded from vacancy
 SELECT results_eq(
-  $$ SELECT sanctioned_strength, vacant_posts, abolished_posts FROM public.v_office_vacancy_dashboard WHERE office_id = (SELECT id FROM public.offices WHERE code = 'HSS-PEERI') LIMIT 1 $$,
+  $$ SELECT sanctioned_strength, vacant_posts, abolished_posts FROM public.v_office_vacancy_dashboard WHERE office_id = (SELECT id FROM public.offices WHERE office_code = 'HSS-PEERI') LIMIT 1 $$,
   $$ VALUES (2, 1, 1) $$,
   'abolished post excluded from vacancy (2 sanctioned, 1 vacant, 1 abolished)'
 );
@@ -252,7 +252,7 @@ BEGIN
 END $$;
 
 SELECT results_eq(
-  $$ SELECT sanctioned_strength, held_in_abeyance_posts FROM public.v_office_vacancy_dashboard WHERE office_id = (SELECT id FROM public.offices WHERE code = 'HSS-PEERI') LIMIT 1 $$,
+  $$ SELECT sanctioned_strength, held_in_abeyance_posts FROM public.v_office_vacancy_dashboard WHERE office_id = (SELECT id FROM public.offices WHERE office_code = 'HSS-PEERI') LIMIT 1 $$,
   $$ VALUES (1, 1) $$,
   'held-in-abeyance post counted separately'
 );
