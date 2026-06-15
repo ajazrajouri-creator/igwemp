@@ -26,8 +26,8 @@ BEGIN
   -- Get context from 00_test_seed
   SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'School Education Department' LIMIT 1;
   -- Create mock users for testing
-  INSERT INTO public.user_accounts (tenant_id, username, email) VALUES (v_tenant_id, 'zoneadmin1', 'admin@example.com') RETURNING id INTO v_admin_id;
-  INSERT INTO public.user_accounts (tenant_id, username, email) VALUES (v_tenant_id, 'hoipeeri1', 'hoi@example.com') RETURNING id INTO v_hoi_id;
+  INSERT INTO public.user_accounts (tenant_id, supabase_auth_id) VALUES (v_tenant_id, gen_random_uuid()) RETURNING id INTO v_admin_id;
+  INSERT INTO public.user_accounts (tenant_id, supabase_auth_id) VALUES (v_tenant_id, gen_random_uuid()) RETURNING id INTO v_hoi_id;
   
   SELECT id INTO v_zone_office_id FROM public.offices WHERE office_code = 'ZEO_PEE' LIMIT 1;
   SELECT id INTO v_school_office_id FROM public.offices WHERE office_code = 'MS_EX' LIMIT 1;
@@ -179,7 +179,9 @@ DECLARE
   v_occupied_post uuid;
 BEGIN
   SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'School Education Department' LIMIT 1;
-  SELECT id INTO v_admin_id FROM public.user_accounts WHERE username = 'zoneadmin1' LIMIT 1;
+  -- In tests, we need an admin ID, but if it's block 4 we can just use the one we created or create a new one.
+  -- Let's just create a new mock admin for this block
+  INSERT INTO public.user_accounts (tenant_id, supabase_auth_id) VALUES (v_tenant_id, gen_random_uuid()) RETURNING id INTO v_admin_id;
   SELECT id INTO v_school_office_id FROM public.offices WHERE office_code = 'MS_EX' LIMIT 1;
   SELECT id INTO v_designation_id FROM public.master_data_items WHERE code = 'TCHR' LIMIT 1;
   SELECT id INTO v_subject_id FROM public.master_data_items WHERE code = 'GEN' LIMIT 1;
