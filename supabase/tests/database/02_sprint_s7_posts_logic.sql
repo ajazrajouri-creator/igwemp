@@ -135,12 +135,12 @@ BEGIN
   SELECT id INTO v_post_2 FROM public.posts LIMIT 1 OFFSET 1;
 
   -- Create two employees
-  INSERT INTO public.parties (tenant_id, party_type) VALUES (v_tenant_id, 'PERSON') RETURNING id INTO v_party_1;
+  INSERT INTO public.parties (tenant_id, party_type, display_name) VALUES (v_tenant_id, 'PERSON', 'Test Emp 1') RETURNING id INTO v_party_1;
   INSERT INTO public.person_parties (party_id, first_name) VALUES (v_party_1, 'Test Emp 1');
   INSERT INTO public.employee_profiles (tenant_id, employee_code, person_party_id)
   VALUES (v_tenant_id, 'TESTEMP01', v_party_1) RETURNING id INTO v_emp_1;
   
-  INSERT INTO public.parties (tenant_id, party_type) VALUES (v_tenant_id, 'PERSON') RETURNING id INTO v_party_2;
+  INSERT INTO public.parties (tenant_id, party_type, display_name) VALUES (v_tenant_id, 'PERSON', 'Test Emp 2') RETURNING id INTO v_party_2;
   INSERT INTO public.person_parties (party_id, first_name) VALUES (v_party_2, 'Test Emp 2');
   INSERT INTO public.employee_profiles (tenant_id, employee_code, person_party_id)
   VALUES (v_tenant_id, 'TESTEMP02', v_party_2) RETURNING id INTO v_emp_2;
