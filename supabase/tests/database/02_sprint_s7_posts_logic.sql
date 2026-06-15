@@ -124,6 +124,8 @@ DECLARE
   v_post_2 uuid;
   v_emp_1 uuid;
   v_emp_2 uuid;
+  v_party_1 uuid;
+  v_party_2 uuid;
 BEGIN
   SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'School Education Department' LIMIT 1;
   SELECT id INTO v_school_office_id FROM public.offices WHERE office_code = 'MS_EX' LIMIT 1;
@@ -133,11 +135,15 @@ BEGIN
   SELECT id INTO v_post_2 FROM public.posts LIMIT 1 OFFSET 1;
 
   -- Create two employees
-  INSERT INTO public.employee_profiles (tenant_id, employee_code, first_name, date_of_birth, gender)
-  VALUES (v_tenant_id, 'TESTEMP01', 'Test', '1990-01-01', 'M') RETURNING id INTO v_emp_1;
+  INSERT INTO public.parties (tenant_id, party_type) VALUES (v_tenant_id, 'PERSON') RETURNING id INTO v_party_1;
+  INSERT INTO public.person_parties (party_id, first_name) VALUES (v_party_1, 'Test Emp 1');
+  INSERT INTO public.employee_profiles (tenant_id, employee_code, person_party_id)
+  VALUES (v_tenant_id, 'TESTEMP01', v_party_1) RETURNING id INTO v_emp_1;
   
-  INSERT INTO public.employee_profiles (tenant_id, employee_code, first_name, date_of_birth, gender)
-  VALUES (v_tenant_id, 'TESTEMP02', 'Test2', '1990-01-01', 'M') RETURNING id INTO v_emp_2;
+  INSERT INTO public.parties (tenant_id, party_type) VALUES (v_tenant_id, 'PERSON') RETURNING id INTO v_party_2;
+  INSERT INTO public.person_parties (party_id, first_name) VALUES (v_party_2, 'Test Emp 2');
+  INSERT INTO public.employee_profiles (tenant_id, employee_code, person_party_id)
+  VALUES (v_tenant_id, 'TESTEMP02', v_party_2) RETURNING id INTO v_emp_2;
 
   -- Post Emp 1 to Post 1
   INSERT INTO public.employee_postings (tenant_id, employee_id, office_id, posting_nature, substantive_post_id, effective_from)
