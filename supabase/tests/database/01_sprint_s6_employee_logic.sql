@@ -124,12 +124,12 @@ SELECT results_eq(
 
 -- Reset config
 RESET ROLE;
-SELECT set_config('request.jwt.claims', '', true);
+SELECT set_config('request.jwt.claims', '{}', true);
 
 
 -- 8. Change Request Optimistic Locking
 SELECT throws_ok(
-  $$
+    $$ 
     DO $blk$
     DECLARE
       v_tenant_id uuid := '00000000-0000-4000-a000-000000000001';
@@ -154,14 +154,10 @@ SELECT throws_ok(
       INSERT INTO public.employee_change_request_items (tenant_id, change_request_id, target_entity_type, target_record_id, operation, proposed_values, existing_record_version)
         VALUES (v_tenant_id, v_req_id, 'PROFILE', v_employee_id, 'UPDATE', '{"employment_status":"RETIRED"}', v_version - 1);
         
-      BEGIN
-        PERFORM public.apply_approved_employee_change_request(v_req_id);
-      EXCEPTION WHEN OTHERS THEN
-        RAISE EXCEPTION 'Caught error: % (SQLSTATE: %)', SQLERRM, SQLSTATE;
-      END;
+      PERFORM public.apply_approved_employee_change_request(v_req_id);
     END $blk$;
   $$,
-  'P0002',
+  'P0001',
   NULL,
   'Optimistic locking did not prevent stale update.'
 );
