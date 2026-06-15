@@ -489,6 +489,28 @@ export interface WorkItem {
   picked_up_by_user?: UserAccount;
 }
 
+export type WorkQueuePriority = 'OVERDUE' | 'DUE_TODAY' | 'DUE_THIS_WEEK' | 'UPCOMING' | 'NO_DEADLINE';
+export type WorkQueueItemType = 'CASE' | 'APPROVAL' | 'ATR' | 'VERIFICATION' | 'INSPECTION' | 'INFORMATION';
+
+export interface WorkQueueItem {
+  item_id: string;
+  tenant_id: string;
+  assignee_type: 'USER' | 'SECTION' | 'OFFICE';
+  assignee_id: string;
+  case_id: string;
+  item_type: WorkQueueItemType;
+  priority: WorkQueuePriority;
+  status: string;
+  due_at: DateString | null;
+  picked_up_by: string | null;
+  picked_up_at: DateString | null;
+  delegation_context: any | null;
+  created_at: DateString;
+  updated_at: DateString;
+  assignee_name?: string;
+  case?: any; // any for mock case, or refine later
+}
+
 // ─── Action Taken Report Engine ──────────────────────────────
 export type ATRStatus = 'DRAFT' | 'SUBMITTED' | 'VERIFIED' | 'APPROVED' | 'RETURNED';
 

@@ -89,8 +89,8 @@ BEGIN
   -- Reviewer Approves
   UPDATE public.post_census_submissions SET status = 'APPROVED' WHERE id = v_submission_id;
 
-  -- Execute RPC to commit (creates 3 posts)
-  PERFORM public.apply_approved_post_census_submission(v_submission_id);
+  -- Approve and execute mapping via new atomic RPC
+  v_response := public.approve_post_census_submission(v_submission_id);
 END $$;
 
 -- Assert 1: Approved census created exactly 3 physical posts
@@ -225,7 +225,7 @@ BEGIN
 
   -- Try to execute RPC without providing an abolition selection
   BEGIN
-    PERFORM public.apply_approved_post_census_submission(v_submission_id);
+    PERFORM public.approve_post_census_submission(v_submission_id);
     RAISE EXCEPTION 'RPC allowed reduction without selections';
   EXCEPTION WHEN OTHERS THEN
     -- Expected mismatch error
@@ -234,26 +234,19 @@ BEGIN
   -- Find the occupied post
   SELECT substantive_post_id INTO v_occupied_post FROM public.employee_postings WHERE status = 'ACTIVE' LIMIT 1;
   
-  -- Try to abolish the occupied post
-  INSERT INTO public.post_census_abolition_selections (tenant_id, submission_id, census_item_id, post_id, selected_by)
-  VALUES (v_tenant_id, v_submission_id, v_item_id, v_occupied_post, v_admin_id);
-
+  -- Try to abolish the occupied post via the RPC
   BEGIN
-    PERFORM public.apply_approved_post_census_submission(v_submission_id);
+    PERFORM public.approve_post_census_submission(v_submission_id, ARRAY[v_occupied_post]);
     RAISE EXCEPTION 'RPC allowed abolishing occupied post';
   EXCEPTION WHEN OTHERS THEN
     -- Expected occupied post error
   END;
 
   -- Fix selection to use a vacant post
-  DELETE FROM public.post_census_abolition_selections WHERE post_id = v_occupied_post;
   SELECT id INTO v_vacant_post FROM public.posts WHERE id != v_occupied_post LIMIT 1;
 
-  INSERT INTO public.post_census_abolition_selections (tenant_id, submission_id, census_item_id, post_id, selected_by)
-  VALUES (v_tenant_id, v_submission_id, v_item_id, v_vacant_post, v_admin_id);
-
-  -- Execute RPC successfully
-  PERFORM public.apply_approved_post_census_submission(v_submission_id);
+  -- Execute RPC successfully with the valid vacant post
+  PERFORM public.approve_post_census_submission(v_submission_id, ARRAY[v_vacant_post]);
 END $$;
 
 SELECT pass('reduced sanctioned count requires reviewer-selected vacant posts');

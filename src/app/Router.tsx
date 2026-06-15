@@ -18,6 +18,7 @@ const OrdersListPage = React.lazy(() => import('../pages/orders/OrdersListPage')
 const CasesListPage = React.lazy(() => import('../pages/cases/CasesListPage').then(m => ({ default: m.CasesListPage })));
 
 const AdminWorkflowsPage = React.lazy(() => import('../pages/admin/AdminWorkflowsPage').then(m => ({ default: m.AdminWorkflowsPage })));
+const PostManagementGrid = React.lazy(() => import('../pages/admin/PostManagementGrid').then(m => ({ default: m.PostManagementGrid })));
 const AdminOrganizationsPage = React.lazy(() => import('../pages/admin/AdminOrganizationsPage').then(m => ({ default: m.AdminOrganizationsPage })));
 const AdminHierarchyPage = React.lazy(() => import('../pages/admin/AdminHierarchyPage').then(m => ({ default: m.AdminHierarchyPage })));
 const AdminOfficesPage = React.lazy(() => import('../pages/admin/AdminOfficesPage').then(m => ({ default: m.AdminOfficesPage })));
@@ -44,6 +45,10 @@ const SchoolsListPage = React.lazy(() => StubPages.then(m => ({ default: m.Schoo
 const SchoolDetailPage = React.lazy(() => StubPages.then(m => ({ default: m.SchoolDetailPage })));
 const ReportsPage = React.lazy(() => StubPages.then(m => ({ default: m.ReportsPage })));
 const DashboardsPage = React.lazy(() => StubPages.then(m => ({ default: m.DashboardsPage })));
+const VacancyDashboard = React.lazy(() => import('../pages/reports/VacancyDashboard').then(m => ({ default: m.VacancyDashboard })));
+
+const PostCensusForm = React.lazy(() => import('../pages/posts/PostCensusForm').then(m => ({ default: m.PostCensusForm })));
+const CensusReviewPanel = React.lazy(() => import('../pages/posts/CensusReviewPanel').then(m => ({ default: m.CensusReviewPanel })));
 const NotificationsPage = React.lazy(() => StubPages.then(m => ({ default: m.NotificationsPage })));
 const AdminSystemPage = React.lazy(() => StubPages.then(m => ({ default: m.AdminSystemPage })));
 const NotFoundPage = React.lazy(() => StubPages.then(m => ({ default: m.NotFoundPage })));
@@ -80,8 +85,12 @@ const router = createBrowserRouter([
       { path: 'schools/:id', element: <Suspense fallback={<PageLoader />}><SchoolDetailPage /></Suspense> },
 
       { path: 'reports', element: <Suspense fallback={<PageLoader />}><ReportsPage /></Suspense> },
+      { path: 'reports/vacancy', element: <Suspense fallback={<PageLoader />}><VacancyDashboard /></Suspense> },
       { path: 'dashboards', element: <Suspense fallback={<PageLoader />}><DashboardsPage /></Suspense> },
       { path: 'notifications', element: <Suspense fallback={<PageLoader />}><NotificationsPage /></Suspense> },
+      
+      { path: 'posts/census', element: <Suspense fallback={<PageLoader />}><PostCensusForm /></Suspense> },
+      { path: 'posts/review', element: <Suspense fallback={<PageLoader />}><CensusReviewPanel /></Suspense> },
 
       { 
         path: 'admin', 
@@ -99,6 +108,7 @@ const router = createBrowserRouter([
           { path: 'delegations', element: <Suspense fallback={<PageLoader />}><AdminDelegationsPage /></Suspense> },
           { path: 'responsibilities', element: <Suspense fallback={<PageLoader />}><AdminResponsibilitiesPage /></Suspense> },
           { path: 'workflows', element: <Suspense fallback={<PageLoader />}><AdminWorkflowsPage /></Suspense> },
+          { path: 'posts', element: <Suspense fallback={<PageLoader />}><PostManagementGrid /></Suspense> },
           { path: 'system', element: <Suspense fallback={<PageLoader />}><AdminSystemPage /></Suspense> },
         ]
       },

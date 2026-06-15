@@ -94,6 +94,14 @@ function useNavItems(unreadCount: number, overdueCount: number) {
       icon: <School size={16} />,
       to: ROUTES.SCHOOLS,
     },
+    {
+      label: 'Post Census',
+      icon: <Building2 size={16} />,
+      children: [
+        { label: 'Submit Census', icon: <FileText size={14} />, to: '/posts/census' },
+        { label: 'Review Census', icon: <Shield size={14} />, to: '/posts/review' },
+      ],
+    },
 
     // ── REPORTING (secondary — ADJ-06) ───────────────────────
     {
@@ -101,6 +109,7 @@ function useNavItems(unreadCount: number, overdueCount: number) {
       icon: <BarChart3 size={16} />,
       children: [
         { label: 'My Dashboard', icon: <LayoutDashboard size={14} />, to: ROUTES.DASHBOARDS },
+        { label: 'Vacancy Dashboard', icon: <BarChart3 size={14} />, to: '/reports/vacancy' },
         { label: 'Standard Reports', icon: <FileText size={14} />, to: ROUTES.REPORTS },
       ],
     },
@@ -126,6 +135,7 @@ function useNavItems(unreadCount: number, overdueCount: number) {
         { label: 'User Provisioning', icon: <Users size={14} />, to: ROUTES.ADMIN_USERS },
         { label: 'Responsibility Types', icon: <Briefcase size={14} />, to: ROUTES.ADMIN_RESPONSIBILITIES },
         { label: 'Workflow Templates', icon: <GitBranch size={14} />, to: ROUTES.ADMIN_WORKFLOWS },
+        { label: 'Post Management', icon: <Building2 size={14} />, to: '/admin/posts' },
         { label: 'System Monitor', icon: <BarChart3 size={14} />, to: ROUTES.ADMIN_SYSTEM },
       ],
     });

@@ -88,11 +88,9 @@ interface AuthContextValue {
   isSectionHead: (sectionId: string) => boolean;
 }
 
-// ─── Dev Mode Flag ────────────────────────────────────────────
-const DEV_MODE = import.meta.env.DEV && (!isSupabaseConfigured);
 
 // ─── Context ──────────────────────────────────────────────────
-const AuthContext = createContext<AuthContextValue | null>(null);
+export const AuthContext = createContext<AuthContextValue | null>(null);
 
 // ─── Provider ─────────────────────────────────────────────────
 export function AuthProvider({ children }: { children: React.ReactNode }) {
