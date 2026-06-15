@@ -56,7 +56,7 @@ BEGIN
   SELECT i.id INTO v_nature_id FROM public.master_data_items i JOIN public.master_data_categories c ON i.category_id = c.id WHERE i.code = 'PERM' AND c.code = 'POST_NATURE' LIMIT 1;
 
   -- Create Census Cycle as Admin
-  SET LOCAL request.jwt.claims TO '{"sub": "test-admin"}';
+  PERFORM set_config('request.jwt.claims', format('{"sub": "%s", "tenant_id": "%s", "role": "SUPER_ADMIN"}', v_admin_id, v_tenant_id), true);
   
   INSERT INTO public.post_census_cycles (tenant_id, title, status)
   VALUES (v_tenant_id, 'Annual Post Census 2026', 'ACTIVE')

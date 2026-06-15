@@ -254,6 +254,27 @@ CREATE TRIGGER trg_census_items_validate_categories
   FOR EACH ROW EXECUTE FUNCTION public.trg_validate_census_item_master_data();
 
 -- 5. Audit Logging Setup
+CREATE OR REPLACE FUNCTION public.write_audit_log(
+  p_tenant_id uuid,
+  p_action text,
+  p_entity_type text,
+  p_entity_id uuid,
+  p_old_values jsonb,
+  p_new_values jsonb
+) RETURNS void AS $$
+DECLARE
+  v_user_id uuid;
+BEGIN
+  -- Attempt to get current user id from auth.uid() or jwt claims if possible
+  v_user_id := NULLIF(current_setting('request.jwt.claims', true)::jsonb->>'sub', '')::uuid;
+  
+  INSERT INTO public.audit_logs (
+    tenant_id, entity_type, entity_id, action, old_values, new_values, performed_by
+  ) VALUES (
+    p_tenant_id, p_entity_type, p_entity_id, p_action, p_old_values, p_new_values, v_user_id
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 CREATE OR REPLACE FUNCTION public.trg_audit_posts()
 RETURNS trigger AS $$
 BEGIN
