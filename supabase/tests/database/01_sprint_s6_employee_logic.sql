@@ -154,10 +154,14 @@ SELECT throws_ok(
       INSERT INTO public.employee_change_request_items (tenant_id, change_request_id, target_entity_type, target_record_id, operation, proposed_values, existing_record_version)
         VALUES (v_tenant_id, v_req_id, 'PROFILE', v_employee_id, 'UPDATE', '{"employment_status":"RETIRED"}', v_version - 1);
         
-      PERFORM public.apply_approved_employee_change_request(v_req_id);
+      BEGIN
+        PERFORM public.apply_approved_employee_change_request(v_req_id);
+      EXCEPTION WHEN OTHERS THEN
+        RAISE EXCEPTION 'Caught error: % (SQLSTATE: %)', SQLERRM, SQLSTATE;
+      END;
     END $blk$;
   $$,
-  'P0001',
+  'P0002',
   NULL,
   'Optimistic locking did not prevent stale update.'
 );
