@@ -2,8 +2,9 @@
 -- IGWEMP CI Test Seed Data
 -- Creates an isolated tenant and organizational structure for CI execution.
 -- ============================================================================
-
 -- 1. Create Tenants
+SELECT plan(1);
+
 INSERT INTO public.tenants (id, name, code) VALUES 
 ('00000000-0000-4000-a000-000000000001', 'School Education Department', 'SED'),
 ('00000000-0000-4000-a000-000000000002', 'Health Department', 'HEALTH')
@@ -100,3 +101,6 @@ INSERT INTO public.workflow_versions (id, workflow_id, version_number, is_active
 ('b0000000-0000-4000-a000-000000000001', 'a0000000-0000-4000-a000-000000000001', 1, true),
 ('b0000000-0000-4000-a000-000000000002', 'a0000000-0000-4000-a000-000000000002', 1, true)
 ON CONFLICT (id) DO NOTHING;
+
+SELECT pass('Seed data execution complete');
+SELECT * FROM finish();
