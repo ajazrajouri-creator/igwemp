@@ -20,7 +20,6 @@ active_postings AS (
   SELECT ep.substantive_post_id
   FROM public.employee_postings ep
   WHERE ep.status = 'ACTIVE'
-    AND ep.deleted_at IS NULL
     AND ep.posting_nature = 'SUBSTANTIVE'
     AND ep.substantive_post_id IS NOT NULL
     AND ep.effective_from <= CURRENT_DATE
@@ -240,7 +239,6 @@ BEGIN
             WHERE ep.substantive_post_id = p.id
               AND ep.status = 'ACTIVE'
               AND ep.posting_nature = 'SUBSTANTIVE'
-              AND ep.deleted_at IS NULL
               AND ep.effective_from <= CURRENT_DATE
               AND (ep.effective_to IS NULL OR CURRENT_DATE < ep.effective_to)
           )
