@@ -44,7 +44,7 @@ jobs:
         run: supabase test db
 
       - name: Serve Edge Functions (Background)
-        run: supabase functions serve employee-import &
+        run: supabase functions serve employee-import --no-verify-jwt &
         
       - name: Wait for Edge Functions to start
         run: sleep 5
