@@ -303,7 +303,8 @@ SELECT throws_ok(
     INSERT INTO public.posts (tenant_id, office_id, post_number, designation_id, post_nature_id, status, effective_from) 
     VALUES ('00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'X', '00000000-0000-0000-0000-000000000000', '00000000-0000-0000-0000-000000000000', 'ACTIVE', CURRENT_DATE);
   $$,
-  'new row violates row-level security policy for table "posts"',
+  '42501', -- insufficient_privilege (RLS violation)
+  NULL,
   'HOI cannot write posts directly'
 );
 
