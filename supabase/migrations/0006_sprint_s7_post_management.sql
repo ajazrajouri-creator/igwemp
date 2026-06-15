@@ -139,7 +139,7 @@ CREATE TRIGGER trg_validate_posting_post
 
 -- Exclusion Constraint for Overlapping Occupancy
 CREATE EXTENSION IF NOT EXISTS btree_gist;
-ALTER TABLE public.employee_postings ADD CONSTRAINT exclude_overlapping_substantive_postings
+ALTER TABLE public.employee_postings ADD CONSTRAINT exclude_overlapping_substantive_post_occupancy
 EXCLUDE USING gist (
   tenant_id WITH =,
   substantive_post_id WITH =,
