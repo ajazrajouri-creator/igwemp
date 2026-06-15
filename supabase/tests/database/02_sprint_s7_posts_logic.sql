@@ -24,7 +24,7 @@ DECLARE
   v_item_id uuid;
 BEGIN
   -- Get context from 00_test_seed
-  SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'JK Education Department' LIMIT 1;
+  SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'School Education Department' LIMIT 1;
   SELECT id INTO v_admin_id FROM public.user_accounts WHERE username = 'zoneadmin1' LIMIT 1;
   SELECT id INTO v_zone_office_id FROM public.offices WHERE office_code = 'ZEO-PEERI' LIMIT 1;
   
@@ -106,7 +106,7 @@ DECLARE
   v_emp_1 uuid;
   v_emp_2 uuid;
 BEGIN
-  SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'JK Education Department' LIMIT 1;
+  SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'School Education Department' LIMIT 1;
   SELECT id INTO v_school_office_id FROM public.offices WHERE office_code = 'HSS-PEERI' LIMIT 1;
   
   -- Get two posts
@@ -177,7 +177,7 @@ DECLARE
   v_vacant_post uuid;
   v_occupied_post uuid;
 BEGIN
-  SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'JK Education Department' LIMIT 1;
+  SELECT id INTO v_tenant_id FROM public.tenants WHERE name = 'School Education Department' LIMIT 1;
   SELECT id INTO v_admin_id FROM public.user_accounts WHERE username = 'zoneadmin1' LIMIT 1;
   SELECT id INTO v_school_office_id FROM public.offices WHERE office_code = 'HSS-PEERI' LIMIT 1;
   SELECT id INTO v_designation_id FROM public.master_data_items WHERE code = 'TCHR' LIMIT 1;
