@@ -49,6 +49,11 @@ const VacancyDashboard = React.lazy(() => import('../pages/reports/VacancyDashbo
 
 const PostCensusForm = React.lazy(() => import('../pages/posts/PostCensusForm').then(m => ({ default: m.PostCensusForm })));
 const CensusReviewPanel = React.lazy(() => import('../pages/posts/CensusReviewPanel').then(m => ({ default: m.CensusReviewPanel })));
+
+const InfrastructureCensusForm = React.lazy(() => import('../pages/infrastructure/InfrastructureCensusForm').then(m => ({ default: m.default })));
+const InfrastructureReviewPanel = React.lazy(() => import('../pages/infrastructure/InfrastructureReviewPanel').then(m => ({ default: m.default })));
+const DeficiencyDashboard = React.lazy(() => import('../pages/reports/DeficiencyDashboard').then(m => ({ default: m.default })));
+
 const NotificationsPage = React.lazy(() => StubPages.then(m => ({ default: m.NotificationsPage })));
 const AdminSystemPage = React.lazy(() => StubPages.then(m => ({ default: m.AdminSystemPage })));
 const NotFoundPage = React.lazy(() => StubPages.then(m => ({ default: m.NotFoundPage })));
@@ -86,11 +91,15 @@ const router = createBrowserRouter([
 
       { path: 'reports', element: <Suspense fallback={<PageLoader />}><ReportsPage /></Suspense> },
       { path: 'reports/vacancy', element: <Suspense fallback={<PageLoader />}><VacancyDashboard /></Suspense> },
+      { path: 'reports/deficiency', element: <Suspense fallback={<PageLoader />}><DeficiencyDashboard /></Suspense> },
       { path: 'dashboards', element: <Suspense fallback={<PageLoader />}><DashboardsPage /></Suspense> },
       { path: 'notifications', element: <Suspense fallback={<PageLoader />}><NotificationsPage /></Suspense> },
       
       { path: 'posts/census', element: <Suspense fallback={<PageLoader />}><PostCensusForm /></Suspense> },
       { path: 'posts/review', element: <Suspense fallback={<PageLoader />}><CensusReviewPanel /></Suspense> },
+      
+      { path: 'infrastructure/census', element: <Suspense fallback={<PageLoader />}><InfrastructureCensusForm /></Suspense> },
+      { path: 'infrastructure/review', element: <Suspense fallback={<PageLoader />}><InfrastructureReviewPanel /></Suspense> },
 
       { 
         path: 'admin', 

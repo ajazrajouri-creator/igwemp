@@ -59,7 +59,7 @@ function WorkItemCard({ item, onOpen }: { item: WorkQueueItem; onOpen: (id: stri
 
   const caseTypeLabel = item.case?.case_type
     .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase()) || 'Case';
+    .replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Case';
 
   return (
     <div
@@ -211,8 +211,9 @@ export function MyWorkQueuePage() {
   const groupedItems = useMemo(() => {
     const groups: Partial<Record<WorkQueuePriority, WorkQueueItem[]>> = {};
     for (const item of filteredItems) {
-      if (!groups[item.priority]) groups[item.priority] = [];
-      groups[item.priority]!.push(item);
+      const key = item.priority as WorkQueuePriority;
+      if (!groups[key]) groups[key] = [];
+      groups[key]!.push(item);
     }
     return groups;
   }, [filteredItems]);

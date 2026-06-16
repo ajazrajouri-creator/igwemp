@@ -17,6 +17,10 @@ export interface Tenant {
   is_active: boolean;
   created_at: DateString;
   updated_at: DateString;
+  // Legacy aliases used by mock data / admin pages
+  tenant_id?: UUID;
+  tenant_code?: string;
+  tenant_name?: string;
 }
 
 export interface TenantConfig {
@@ -59,6 +63,10 @@ export interface PersonParty extends Party {
   aadhaar_last4: string | null;
   pan_hash: string | null;
   pan_masked: string | null;
+  // Legacy aliases used by mock data
+  party_id?: UUID;
+  email?: string | null;
+  mobile?: string | null;
 }
 
 export interface OrgParty extends Party {
@@ -82,6 +90,11 @@ export interface UserAccount {
   updated_at: DateString;
   // joined
   party?: PersonParty;
+  role_assignments?: RoleAssignment[];
+  // Legacy aliases used by mock data
+  user_id?: UUID;
+  is_active?: boolean;
+  is_mfa_enabled?: boolean;
 }
 
 export interface UserPreference {
@@ -120,6 +133,9 @@ export interface HierarchyLevel {
   parent_level_id: UUID | null;
   created_at: DateString;
   updated_at: DateString;
+  // Legacy aliases used by mock data
+  level_id?: UUID;
+  allowed_office_types?: string[];
 }
 
 export interface Office {
@@ -140,6 +156,8 @@ export interface Office {
   level?: HierarchyLevel;
   parent?: Office;
   sections?: Section[];
+  // Legacy alias used by mock data
+  office_id?: UUID;
 }
 
 // ─── Section ──────────────────────────────────────────────────
@@ -160,6 +178,8 @@ export interface Section {
   // joined
   office?: Office;
   head?: UserAccount;
+  // Legacy alias used by mock data
+  section_id?: UUID;
 }
 
 export type SectionRole = 'HEAD' | 'SENIOR_OFFICER' | 'OFFICER' | 'CLERK' | 'READ_ONLY';
@@ -220,6 +240,9 @@ export interface RoleAssignment {
   // joined
   role?: Role;
   scopes?: RoleAssignmentScope[];
+  // Legacy aliases used by mock data
+  assignment_id?: UUID;
+  role_code?: string;
 }
 
 export interface RoleAssignmentScope {
@@ -252,6 +275,15 @@ export interface DelegationOfAuthority {
   delegator?: UserAccount;
   delegate?: UserAccount;
   scopes?: DelegationScope[];
+  // Legacy aliases used by mock data
+  delegation_id?: UUID;
+  scope_of_authority?: any;
+  reason?: string | null;
+  issuing_order_id?: UUID | null;
+  approved_by?: UUID | null;
+  revoked_by?: UUID | null;
+  revoked_at?: DateString | null;
+  revocation_reason?: string | null;
 }
 
 export interface DelegationScope {
@@ -586,6 +618,23 @@ export interface Notification {
   template_id: UUID | null;
   content: string;
   is_read: boolean;
+  created_at: DateString;
+}
+
+// ─── Notification Delivery (used by TopBar & mock data) ──────
+export interface NotificationDelivery {
+  delivery_id: UUID;
+  tenant_id: UUID;
+  event_id: UUID;
+  recipient_id: UUID;
+  channel: 'IN_APP' | 'EMAIL' | 'SMS' | 'WHATSAPP';
+  status: string;
+  priority: 'URGENT' | 'HIGH' | 'NORMAL' | 'LOW';
+  title: string;
+  body: string;
+  action_url?: string;
+  delivered_at: DateString | null;
+  read_at: DateString | null;
   created_at: DateString;
 }
 

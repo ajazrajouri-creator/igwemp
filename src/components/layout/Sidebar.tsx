@@ -102,6 +102,14 @@ function useNavItems(unreadCount: number, overdueCount: number) {
         { label: 'Review Census', icon: <Shield size={14} />, to: '/posts/review' },
       ],
     },
+    {
+      label: 'Infrastructure',
+      icon: <Building2 size={16} />,
+      children: [
+        { label: 'Submit Census', icon: <FileText size={14} />, to: '/infrastructure/census' },
+        { label: 'Review Census', icon: <Shield size={14} />, to: '/infrastructure/review' },
+      ],
+    },
 
     // ── REPORTING (secondary — ADJ-06) ───────────────────────
     {
@@ -110,6 +118,7 @@ function useNavItems(unreadCount: number, overdueCount: number) {
       children: [
         { label: 'My Dashboard', icon: <LayoutDashboard size={14} />, to: ROUTES.DASHBOARDS },
         { label: 'Vacancy Dashboard', icon: <BarChart3 size={14} />, to: '/reports/vacancy' },
+        { label: 'Deficiency Dashboard', icon: <AlertTriangle size={14} />, to: '/reports/deficiency' },
         { label: 'Standard Reports', icon: <FileText size={14} />, to: ROUTES.REPORTS },
       ],
     },
@@ -299,30 +308,30 @@ export function Sidebar({ collapsed, onToggle, unreadCount, overdueCount }: Side
 
         {!collapsed && <div className="sidebar-section-label mt-3">Governance</div>}
         <div className={collapsed ? 'mt-2' : ''}>
-          {navItems.slice(3, 5).map((item) => (
+          {navItems.slice(3, 6).map((item) => (
             <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
           ))}
         </div>
 
         {!collapsed && <div className="sidebar-section-label mt-3">Education</div>}
         <div className={collapsed ? 'mt-2' : ''}>
-          {navItems.slice(5, 7).map((item) => (
+          {navItems.slice(6, 10).map((item) => (
             <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
           ))}
         </div>
 
         {!collapsed && <div className="sidebar-section-label mt-3">Reporting</div>}
         <div className={collapsed ? 'mt-2' : ''}>
-          {navItems.slice(7, 9).map((item) => (
+          {navItems.slice(10, 12).map((item) => (
             <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
           ))}
         </div>
 
-        {navItems.length > 9 && (
+        {navItems.length > 12 && (
           <>
             {!collapsed && <div className="sidebar-section-label mt-3">System</div>}
             <div className={collapsed ? 'mt-2' : ''}>
-              {navItems.slice(9).map((item) => (
+              {navItems.slice(12).map((item) => (
                 <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
               ))}
             </div>

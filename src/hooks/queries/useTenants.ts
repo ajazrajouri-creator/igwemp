@@ -56,7 +56,7 @@ export function useUpdateTenant() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: tenantKeys.all });
-      queryClient.setQueryData(tenantKeys.detail(data.tenant_id), data);
+      queryClient.setQueryData(tenantKeys.detail(data.id), data);
     },
   });
 }
