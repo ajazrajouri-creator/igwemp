@@ -1,0 +1,28 @@
+src/hooks/queries/useCensusReview.ts(20,9): error TS6133: 'user' is declared but its value is never read.
+src/hooks/queries/useOffices.ts(43,33): error TS6133: 'acc' is declared but its value is never read.
+src/hooks/queries/useOffices.ts(43,38): error TS6133: 'office' is declared but its value is never read.
+src/lib/mockData.ts(136,3): error TS2741: Property 'title' is missing in type '{ item_id: string; tenant_id: string; assignee_type: "USER"; assignee_id: string; case_id: string; item_type: "ATR"; priority: "OVERDUE"; status: string; due_at: string; picked_up_by: string; picked_up_at: string; ... 4 more ...; case: { ...; }; }' but required in type 'WorkQueueItem'.
+src/lib/mockData.ts(168,3): error TS2741: Property 'title' is missing in type '{ item_id: string; tenant_id: string; assignee_type: "USER"; assignee_id: string; case_id: string; item_type: "VERIFICATION"; priority: "OVERDUE"; status: string; due_at: string; picked_up_by: string; ... 5 more ...; case: { ...; }; }' but required in type 'WorkQueueItem'.
+src/lib/mockData.ts(200,3): error TS2741: Property 'title' is missing in type '{ item_id: string; tenant_id: string; assignee_type: "USER"; assignee_id: string; case_id: string; item_type: "APPROVAL"; priority: "DUE_TODAY"; status: string; due_at: string; picked_up_by: null; ... 5 more ...; case: { ...; }; }' but required in type 'WorkQueueItem'.
+src/lib/mockData.ts(232,3): error TS2741: Property 'title' is missing in type '{ item_id: string; tenant_id: string; assignee_type: "USER"; assignee_id: string; case_id: string; item_type: "CASE"; priority: "DUE_TODAY"; status: string; due_at: string; picked_up_by: string; ... 5 more ...; case: { ...; }; }' but required in type 'WorkQueueItem'.
+src/lib/mockData.ts(264,3): error TS2741: Property 'title' is missing in type '{ item_id: string; tenant_id: string; assignee_type: "USER"; assignee_id: string; case_id: string; item_type: "ATR"; priority: "DUE_THIS_WEEK"; status: string; due_at: string; picked_up_by: string; ... 5 more ...; case: { ...; }; }' but required in type 'WorkQueueItem'.
+src/lib/mockData.ts(290,3): error TS2741: Property 'title' is missing in type '{ item_id: string; tenant_id: string; assignee_type: "USER"; assignee_id: string; case_id: string; item_type: "CASE"; priority: "DUE_THIS_WEEK"; status: string; due_at: string; picked_up_by: string; ... 5 more ...; case: { ...; }; }' but required in type 'WorkQueueItem'.
+src/lib/mockData.ts(316,3): error TS2741: Property 'title' is missing in type '{ item_id: string; tenant_id: string; assignee_type: "USER"; assignee_id: string; case_id: string; item_type: "CASE"; priority: "UPCOMING"; status: string; due_at: string; picked_up_by: null; picked_up_at: null; ... 4 more ...; case: { ...; }; }' but required in type 'WorkQueueItem'.
+src/lib/mockData.ts(488,3): error TS2741: Property 'title' is missing in type '{ item_id: string; tenant_id: string; assignee_type: "SECTION"; assignee_id: string; case_id: string; item_type: "CASE"; priority: "DUE_TODAY"; status: string; due_at: string; picked_up_by: null; ... 4 more ...; assignee_name: string; }' but required in type 'WorkQueueItem'.
+src/lib/mockData.ts(505,3): error TS2741: Property 'title' is missing in type '{ item_id: string; tenant_id: string; assignee_type: "SECTION"; assignee_id: string; case_id: string; item_type: "ATR"; priority: "OVERDUE"; status: string; due_at: string; picked_up_by: string; ... 4 more ...; assignee_name: string; }' but required in type 'WorkQueueItem'.
+src/lib/mockData.ts(522,3): error TS2741: Property 'title' is missing in type '{ item_id: string; tenant_id: string; assignee_type: "SECTION"; assignee_id: string; case_id: string; item_type: "APPROVAL"; priority: "DUE_THIS_WEEK"; status: string; due_at: string; picked_up_by: string; ... 4 more ...; assignee_name: string; }' but required in type 'WorkQueueItem'.
+src/pages/infrastructure/InfrastructureCensusForm.tsx(459,32): error TS6133: 'metricKey' is declared but its value is never read.
+src/pages/posts/CensusReviewPanel.tsx(271,37): error TS6133: 'res' is declared but its value is never read.
+src/pages/posts/PostCensusForm.tsx(43,9): error TS6133: 'user' is declared but its value is never read.
+src/pages/workqueue/MyWorkQueuePage.tsx(10,42): error TS6133: 'ExternalLink' is declared but its value is never read.
+src/pages/workqueue/MyWorkQueuePage.tsx(11,3): error TS6133: 'Zap' is declared but its value is never read.
+src/pages/workqueue/MyWorkQueuePage.tsx(11,20): error TS6133: 'MoreHorizontal' is declared but its value is never read.
+src/pages/workqueue/SectionQueuePage.tsx(7,9): error TS6133: 'user' is declared but its value is never read.
+src/types/index.ts(524,13): error TS2300: Duplicate identifier 'WorkQueuePriority'.
+src/types/index.ts(525,13): error TS2300: Duplicate identifier 'WorkQueueItemType'.
+src/types/index.ts(635,3): error TS2687: All declarations of 'action_url' must have identical modifiers.
+src/types/index.ts(948,13): error TS2300: Duplicate identifier 'WorkQueuePriority'.
+src/types/index.ts(949,13): error TS2300: Duplicate identifier 'WorkQueueItemType'.
+src/types/index.ts(967,3): error TS2717: Subsequent property declarations must have the same type.  Property 'priority' must be of type '"LOW" | "NORMAL" | "HIGH" | "URGENT"', but here has type 'string'.
+src/types/index.ts(968,3): error TS2687: All declarations of 'action_url' must have identical modifiers.
+src/types/index.ts(968,3): error TS2717: Subsequent property declarations must have the same type.  Property 'action_url' must be of type 'string | undefined', but here has type 'string | null'.

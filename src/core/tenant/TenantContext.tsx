@@ -8,8 +8,11 @@ import type { Tenant, TenantConfig } from '../../types';
 
 // ─── Phase 1 Seed Tenant: School Education Department ─────────
 export const SED_TENANT: Tenant = {
+  id: 'sed-tenant-001',
   tenant_id: 'sed-tenant-001',
+  code: 'SED',
   tenant_code: 'SED',
+  name: 'School Education Department',
   tenant_name: 'School Education Department',
   config: {
     display_name: 'School Education Department',

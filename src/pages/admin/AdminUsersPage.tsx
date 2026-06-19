@@ -1,4 +1,3 @@
-import React from 'react';
 import { useUsers } from '../../hooks/queries/useIdentity';
 import { UserPlus, Search, Filter } from 'lucide-react';
 

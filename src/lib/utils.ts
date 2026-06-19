@@ -4,7 +4,7 @@
 
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { WorkQueuePriority } from '../types';
+import type { WorkQueuePriority } from '../types';
 
 // ─── Tailwind Class Merging ───────────────────────────────────
 export function cn(...inputs: ClassValue[]) {

@@ -1,6 +1,5 @@
-import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { Building2, Network, Snail as Structure, Folders, Database, Users, Shield, KeyRound, Link, Award, ArrowRightLeft } from 'lucide-react';
+import { Building2, Network, Snail as Structure, Folders, Database, Users, Shield,  Link, Award, ArrowRightLeft } from 'lucide-react';
 
 const NAV_ITEMS = [
   { to: '/admin/organizations', icon: <Building2 size={16} />, label: 'Organizations' },

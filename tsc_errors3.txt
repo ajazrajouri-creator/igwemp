@@ -1,0 +1,10 @@
+src/hooks/queries/useCensusReview.ts(20,9): error TS6133: 'user' is declared but its value is never read.
+src/hooks/queries/useOffices.ts(43,33): error TS6133: 'acc' is declared but its value is never read.
+src/hooks/queries/useOffices.ts(43,38): error TS6133: 'office' is declared but its value is never read.
+src/pages/infrastructure/InfrastructureCensusForm.tsx(459,32): error TS6133: 'metricKey' is declared but its value is never read.
+src/pages/posts/CensusReviewPanel.tsx(271,37): error TS6133: 'res' is declared but its value is never read.
+src/pages/posts/PostCensusForm.tsx(43,9): error TS6133: 'user' is declared but its value is never read.
+src/pages/workqueue/MyWorkQueuePage.tsx(10,42): error TS6133: 'ExternalLink' is declared but its value is never read.
+src/pages/workqueue/MyWorkQueuePage.tsx(11,3): error TS6133: 'Zap' is declared but its value is never read.
+src/pages/workqueue/MyWorkQueuePage.tsx(11,20): error TS6133: 'MoreHorizontal' is declared but its value is never read.
+src/pages/workqueue/SectionQueuePage.tsx(7,9): error TS6133: 'user' is declared but its value is never read.

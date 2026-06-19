@@ -1,4 +1,3 @@
-import React from 'react';
 import { useCases } from '../../hooks/queries/useCases';
 import { Briefcase, AlertCircle, ChevronRight, Filter } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

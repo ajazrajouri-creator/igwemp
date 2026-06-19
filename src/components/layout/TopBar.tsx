@@ -3,7 +3,7 @@
 // Search, Notifications, Delegation Banner, Profile
 // ============================================================
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search, Bell, ChevronDown, LogOut, User, Settings,

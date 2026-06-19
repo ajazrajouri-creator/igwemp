@@ -1,4 +1,3 @@
-import React from 'react';
 import { useOfficeHierarchy } from '../../hooks/queries/useOffices';
 import { Plus, ChevronRight, Building } from 'lucide-react';
 import type { Office } from '../../types';

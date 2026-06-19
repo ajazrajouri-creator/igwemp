@@ -1,12 +1,11 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery} from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 import type { Office, HierarchyLevel } from '../../types';
 
 export const officeKeys = {
   all: ['offices'] as const,
   levels: ['hierarchy_levels'] as const,
-  tree: () => [...officeKeys.all, 'tree'] as const,
-};
+  tree: () => [...officeKeys.all, 'tree'] as const};
 
 export function useHierarchyLevels() {
   return useQuery({
@@ -19,8 +18,7 @@ export function useHierarchyLevels() {
       
       if (error) throw error;
       return data as HierarchyLevel[];
-    },
-  });
+    }});
 }
 
 export function useOffices() {
@@ -35,22 +33,16 @@ export function useOffices() {
       
       if (error) throw error;
       return data as Office[];
-    },
-  });
+    }});
 }
 
 export function useOfficeHierarchy() {
   const { data: offices, ...rest } = useOffices();
 
   // Helper to transform flat offices array into a tree using parent_office_id
-  const tree = offices?.reduce((acc, office) => {
-    // Basic tree logic - in a real app, you'd recursively nest them
-    // based on parent_office_id. For now, returning flat but typed.
-    return offices;
-  }, [] as Office[]);
+  const tree = offices;
 
   return {
     data: tree,
-    ...rest,
-  };
+    ...rest};
 }

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useOfficeSections } from '../../hooks/queries/useSections';
 import { Plus, Users } from 'lucide-react';
 
@@ -51,9 +50,9 @@ export function AdminSectionsPage() {
                   {section.head ? (
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 rounded-full bg-surface-4 flex items-center justify-center text-xs">
-                        {section.head.username.charAt(0).toUpperCase()}
+                        {(section.head?.username ?? '?').charAt(0).toUpperCase()}
                       </div>
-                      <span>{section.head.username}</span>
+                      <span>{section.head?.username ?? 'Unknown'}</span>
                     </div>
                   ) : (
                     <span className="text-ink-disabled italic">Unassigned</span>

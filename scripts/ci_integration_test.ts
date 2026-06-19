@@ -1,9 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-
 const SUPABASE_URL = process.env.SUPABASE_URL || 'http://127.0.0.1:54321';
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || 'test-anon-key';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function runTest() {
   console.log('--- CI EDGE FUNCTION INTEGRATION TEST ---');
@@ -17,20 +13,27 @@ async function runTest() {
   ];
 
   try {
-    const { data, error } = await supabase.functions.invoke('employee-import', {
-      body: {
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/employee-import`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({
         batch_id: '00000000-0000-0000-0000-000000000000',
         rows: rawCsvRows,
         existingCodes: ['EXISTING01', 'EMP_REQ_CHANGE'],
         validCadres: ['TEACHER', 'MASTER', 'PRINCIPAL']
-      }
+      })
     });
 
-    if (error) {
-      console.error('Edge function failed:', error);
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error(`Edge function failed with status ${response.status}:`, errText);
       process.exit(1);
     }
 
+    const data = await response.json();
     console.log('Edge function response:', JSON.stringify(data, null, 2));
     console.log('CI Integration test completed successfully!');
   } catch (err) {

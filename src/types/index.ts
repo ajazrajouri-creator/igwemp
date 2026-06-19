@@ -17,6 +17,10 @@ export interface Tenant {
   is_active: boolean;
   created_at: DateString;
   updated_at: DateString;
+  // Legacy aliases used by mock data / admin pages
+  tenant_id?: UUID;
+  tenant_code?: string;
+  tenant_name?: string;
 }
 
 export interface TenantConfig {
@@ -59,6 +63,10 @@ export interface PersonParty extends Party {
   aadhaar_last4: string | null;
   pan_hash: string | null;
   pan_masked: string | null;
+  // Legacy aliases used by mock data
+  party_id?: UUID;
+  email?: string | null;
+  mobile?: string | null;
 }
 
 export interface OrgParty extends Party {
@@ -82,6 +90,11 @@ export interface UserAccount {
   updated_at: DateString;
   // joined
   party?: PersonParty;
+  role_assignments?: RoleAssignment[];
+  // Legacy aliases used by mock data
+  user_id?: UUID;
+  is_active?: boolean;
+  is_mfa_enabled?: boolean;
 }
 
 export interface UserPreference {
@@ -120,6 +133,9 @@ export interface HierarchyLevel {
   parent_level_id: UUID | null;
   created_at: DateString;
   updated_at: DateString;
+  // Legacy aliases used by mock data
+  level_id?: UUID;
+  allowed_office_types?: string[];
 }
 
 export interface Office {
@@ -140,6 +156,8 @@ export interface Office {
   level?: HierarchyLevel;
   parent?: Office;
   sections?: Section[];
+  // Legacy alias used by mock data
+  office_id?: UUID;
 }
 
 // ─── Section ──────────────────────────────────────────────────
@@ -160,6 +178,8 @@ export interface Section {
   // joined
   office?: Office;
   head?: UserAccount;
+  // Legacy alias used by mock data
+  section_id?: UUID;
 }
 
 export type SectionRole = 'HEAD' | 'SENIOR_OFFICER' | 'OFFICER' | 'CLERK' | 'READ_ONLY';
@@ -220,6 +240,9 @@ export interface RoleAssignment {
   // joined
   role?: Role;
   scopes?: RoleAssignmentScope[];
+  // Legacy aliases used by mock data
+  assignment_id?: UUID;
+  role_code?: string;
 }
 
 export interface RoleAssignmentScope {
@@ -252,6 +275,15 @@ export interface DelegationOfAuthority {
   delegator?: UserAccount;
   delegate?: UserAccount;
   scopes?: DelegationScope[];
+  // Legacy aliases used by mock data
+  delegation_id?: UUID;
+  scope_of_authority?: any;
+  reason?: string | null;
+  issuing_order_id?: UUID | null;
+  approved_by?: UUID | null;
+  revoked_by?: UUID | null;
+  revoked_at?: DateString | null;
+  revocation_reason?: string | null;
 }
 
 export interface DelegationScope {
@@ -489,6 +521,28 @@ export interface WorkItem {
   picked_up_by_user?: UserAccount;
 }
 
+export type WorkQueuePriority = 'OVERDUE' | 'DUE_TODAY' | 'DUE_THIS_WEEK' | 'UPCOMING' | 'NO_DEADLINE';
+export type WorkQueueItemType = 'CASE' | 'APPROVAL' | 'ATR' | 'VERIFICATION' | 'INSPECTION' | 'INFORMATION';
+
+export interface WorkQueueItem {
+  item_id: string;
+  tenant_id: string;
+  assignee_type: 'USER' | 'SECTION' | 'OFFICE';
+  assignee_id: string;
+  case_id: string;
+  item_type: WorkQueueItemType;
+  priority: WorkQueuePriority;
+  status: string;
+  due_at: DateString | null;
+  picked_up_by: string | null;
+  picked_up_at: DateString | null;
+  delegation_context: any | null;
+  created_at: DateString;
+  updated_at: DateString;
+  assignee_name?: string;
+  case?: any; // any for mock case, or refine later
+}
+
 // ─── Action Taken Report Engine ──────────────────────────────
 export type ATRStatus = 'DRAFT' | 'SUBMITTED' | 'VERIFIED' | 'APPROVED' | 'RETURNED';
 
@@ -564,6 +618,23 @@ export interface Notification {
   template_id: UUID | null;
   content: string;
   is_read: boolean;
+  created_at: DateString;
+}
+
+// ─── Notification Delivery (used by TopBar & mock data) ──────
+export interface NotificationDelivery {
+  delivery_id: UUID;
+  tenant_id: UUID;
+  event_id: UUID;
+  recipient_id: UUID;
+  channel: 'IN_APP' | 'EMAIL' | 'SMS' | 'WHATSAPP';
+  status: string;
+  priority: 'URGENT' | 'HIGH' | 'NORMAL' | 'LOW';
+  title: string;
+  body: string;
+  action_url?: string;
+  delivered_at: DateString | null;
+  read_at: DateString | null;
   created_at: DateString;
 }
 
@@ -725,3 +796,151 @@ export interface EmployeeChangeRequestItem {
   created_at: DateString;
   updated_at: DateString;
 }
+
+// ============================================================
+// Sprint S9 - Student Enrollment & School Roll Management
+// ============================================================
+
+export type AcademicSessionStatus = 'DRAFT' | 'ACTIVE' | 'CLOSED' | 'ARCHIVED';
+
+export interface AcademicSession {
+  id: UUID;
+  tenant_id: UUID;
+  session_name: string;
+  start_date: DateString;
+  end_date: DateString;
+  status: AcademicSessionStatus;
+  created_at: DateString;
+  updated_at: DateString;
+}
+
+export interface StudentProfile {
+  id: UUID;
+  tenant_id: UUID;
+  student_code: string | null;
+  admission_no: string | null;
+  student_name: string;
+  father_name: string | null;
+  mother_name: string | null;
+  guardian_name: string | null;
+  date_of_birth: DateString | null;
+  gender_id: UUID | null;
+  mobile_no: string | null;
+  address_text: string | null;
+  village: string | null;
+  panchayat: string | null;
+  is_cwsn: boolean;
+  is_active: boolean;
+  created_at: DateString;
+  updated_at: DateString;
+}
+
+export interface StudentEnrollment {
+  id: UUID;
+  tenant_id: UUID;
+  student_id: UUID;
+  academic_session_id: UUID;
+  office_id: UUID;
+  office_path: string;
+  class_id: UUID;
+  section_name: string | null;
+  roll_no: string | null;
+  enrollment_status_id: UUID;
+  enrollment_date: DateString;
+  exit_date: DateString | null;
+  exit_reason_id: UUID | null;
+  previous_school: string | null;
+  next_school: string | null;
+  created_at: DateString;
+  updated_at: DateString;
+}
+
+export type EnrollmentSubmissionStatus = 'DRAFT' | 'SUBMITTED' | 'IN_REVIEW' | 'RETURNED' | 'APPROVED' | 'COMMITTED';
+
+export interface StudentEnrollmentSubmission {
+  id: UUID;
+  tenant_id: UUID;
+  academic_session_id: UUID;
+  office_id: UUID;
+  office_path: string;
+  status: EnrollmentSubmissionStatus;
+  submitted_at: DateString | null;
+  reviewed_at: DateString | null;
+  reviewer_remarks: string | null;
+  approved_at: DateString | null;
+  created_at: DateString;
+  updated_at: DateString;
+}
+
+export interface StudentEnrollmentSnapshot {
+  id: UUID;
+  tenant_id: UUID;
+  academic_session_id: UUID;
+  office_id: UUID;
+  office_path: string;
+  class_id: UUID;
+  section_name: string | null;
+  male_count: number;
+  female_count: number;
+  other_count: number;
+  total_count: number;
+  cwsn_count: number;
+  created_at: DateString;
+  updated_at: DateString;
+}
+
+export interface SchoolClassConfiguration {
+  id: UUID;
+  tenant_id: UUID;
+  office_id: UUID;
+  office_path: string;
+  school_type_id: UUID;
+  class_id: UUID;
+  is_allowed: boolean;
+  is_active: boolean;
+  effective_from: DateString;
+  effective_to: DateString | null;
+  created_at: DateString;
+  updated_at: DateString;
+}
+
+export interface StudentSeniorSecondaryEnrollmentDetail {
+  id: UUID;
+  tenant_id: UUID;
+  submission_id: UUID;
+  academic_session_id: UUID;
+  office_id: UUID;
+  office_path: string;
+  class_id: UUID;
+  stream_id: UUID;
+  subject_id: UUID | null;
+  subject_group_name: string | null;
+  male_count: number;
+  female_count: number;
+  other_count: number;
+  total_count: number;
+  cwsn_count: number;
+  created_at: DateString;
+  updated_at: DateString;
+}
+
+// ─── Employee Update Request (S9.1 Self-Service) ───────────────
+export interface EmployeeUpdateRequest {
+  id: UUID;
+  request_type: string;
+  status: 'PENDING' | 'IN_REVIEW' | 'APPROVED' | 'RETURNED' | 'APPLIED' | 'WITHDRAWN';
+  submitted_at: DateString;
+  reviewer_remarks: string | null;
+  proposed_value?: string;
+}
+
+export interface EmployeeUpdateRequestItem {
+  id: UUID;
+  change_request_id: UUID;
+  target_entity_type: string;
+  target_record_id: UUID | null;
+  operation: 'CREATE' | 'UPDATE' | 'CLOSE' | 'CORRECT';
+  proposed_values: JSONBValue;
+  status: 'PENDING' | 'APPLIED' | 'FAILED' | 'REJECTED';
+}
+

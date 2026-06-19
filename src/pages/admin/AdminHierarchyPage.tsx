@@ -1,4 +1,3 @@
-import React from 'react';
 import { useHierarchyLevels } from '../../hooks/queries/useOffices';
 import { Plus, GripVertical } from 'lucide-react';
 

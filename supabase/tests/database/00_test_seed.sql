@@ -2,8 +2,9 @@
 -- IGWEMP CI Test Seed Data
 -- Creates an isolated tenant and organizational structure for CI execution.
 -- ============================================================================
-
 -- 1. Create Tenants
+SELECT plan(1);
+
 INSERT INTO public.tenants (id, name, code) VALUES 
 ('00000000-0000-4000-a000-000000000001', 'School Education Department', 'SED'),
 ('00000000-0000-4000-a000-000000000002', 'Health Department', 'HEALTH')
@@ -31,28 +32,36 @@ INSERT INTO public.scope_dimensions (id, tenant_id, code, name, entity_type, mas
 ('30000000-0000-4000-a000-000000000003', '00000000-0000-4000-a000-000000000001', 'SCHOOL_TYPE', 'School Type', 'EMPLOYEE', '10000000-0000-4000-a000-000000000003', 'EXACT')
 ON CONFLICT (id) DO NOTHING;
 
+-- 3.5. Hierarchy Levels
+INSERT INTO public.hierarchy_levels (id, tenant_id, level_code, level_name, sort_order) VALUES 
+('35000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'STATE', 'State Level', 10),
+('35000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000001', 'DISTRICT', 'District Level', 20),
+('35000000-0000-4000-a000-000000000003', '00000000-0000-4000-a000-000000000001', 'ZONAL', 'Zonal Level', 30),
+('35000000-0000-4000-a000-000000000004', '00000000-0000-4000-a000-000000000001', 'SCHOOL', 'School Level', 40)
+ON CONFLICT (id) DO NOTHING;
+
 -- 4. Offices (LTree setup)
-INSERT INTO public.offices (id, tenant_id, office_name, office_code, path) VALUES 
-('40000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'Directorate', 'DIR', 'DIR'),
-('40000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000001', 'CEO Rajouri', 'CEO_RAJ', 'DIR.CEO_RAJ'),
-('40000000-0000-4000-a000-000000000003', '00000000-0000-4000-a000-000000000001', 'ZEO Peeri', 'ZEO_PEE', 'DIR.CEO_RAJ.ZEO_PEE'),
-('40000000-0000-4000-a000-000000000004', '00000000-0000-4000-a000-000000000001', 'Middle School Example', 'MS_EX', 'DIR.CEO_RAJ.ZEO_PEE.MS_EX')
+INSERT INTO public.offices (id, tenant_id, office_name, office_code, path, level_id) VALUES 
+('40000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'Directorate', 'DIR', 'DIR', '35000000-0000-4000-a000-000000000001'),
+('40000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000001', 'CEO Rajouri', 'CEO_RAJ', 'DIR.CEO_RAJ', '35000000-0000-4000-a000-000000000002'),
+('40000000-0000-4000-a000-000000000003', '00000000-0000-4000-a000-000000000001', 'ZEO Peeri', 'ZEO_PEE', 'DIR.CEO_RAJ.ZEO_PEE', '35000000-0000-4000-a000-000000000003'),
+('40000000-0000-4000-a000-000000000004', '00000000-0000-4000-a000-000000000001', 'Middle School Example', 'MS_EX', 'DIR.CEO_RAJ.ZEO_PEE.MS_EX', '35000000-0000-4000-a000-000000000004')
 ON CONFLICT (id) DO NOTHING;
 
 -- 5. Sections
-INSERT INTO public.sections (id, tenant_id, name) VALUES 
-('50000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'Establishment'),
-('50000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000001', 'Academic')
+INSERT INTO public.sections (id, tenant_id, office_id, section_type, section_name) VALUES 
+('50000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', '40000000-0000-4000-a000-000000000001', 'ESTABLISHMENT', 'Establishment Section'),
+('50000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000001', '40000000-0000-4000-a000-000000000001', 'ACADEMIC', 'Academic Section')
 ON CONFLICT (id) DO NOTHING;
 
 -- 6. Identity Users (Parties + Accounts + Roles)
-INSERT INTO public.parties (party_id, party_type) VALUES 
-('60000000-0000-4000-a000-000000000001', 'PERSON'), -- Admin
-('60000000-0000-4000-a000-000000000002', 'PERSON'), -- CEO
-('60000000-0000-4000-a000-000000000003', 'PERSON'), -- ZEO
-('60000000-0000-4000-a000-000000000004', 'PERSON'), -- Employee
-('60000000-0000-4000-a000-000000000005', 'PERSON')  -- Academic Officer
-ON CONFLICT (party_id) DO NOTHING;
+INSERT INTO public.parties (id, tenant_id, party_type, display_name) VALUES 
+('60000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'PERSON', 'Admin User'),
+('60000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000001', 'PERSON', 'CEO User'),
+('60000000-0000-4000-a000-000000000003', '00000000-0000-4000-a000-000000000001', 'PERSON', 'ZEO User'),
+('60000000-0000-4000-a000-000000000004', '00000000-0000-4000-a000-000000000001', 'PERSON', 'Employee User'),
+('60000000-0000-4000-a000-000000000005', '00000000-0000-4000-a000-000000000001', 'PERSON', 'Academic Officer')
+ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO public.person_parties (party_id, first_name, last_name, dob, gender) VALUES 
 ('60000000-0000-4000-a000-000000000001', 'Admin', 'User', '1980-01-01', 'MALE'),
@@ -71,3 +80,27 @@ ON CONFLICT (id) DO NOTHING;
 
 -- Note: user_accounts linking auth.uid() usually requires real JWT sub mapping. 
 -- For pgTAP tests, we will mock auth.uid() or construct specific accounts dynamically inside tests.
+
+-- 7. Mock Data for Child-Table RLS Testing
+INSERT INTO public.documents (id, tenant_id, title, document_type) VALUES 
+('80000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'SED Document', 'POLICY'),
+('80000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000002', 'Health Document', 'POLICY')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.document_versions (id, document_id, version_number, file_path, file_size, mime_type) VALUES 
+('90000000-0000-4000-a000-000000000001', '80000000-0000-4000-a000-000000000001', 1, 'path/sed', 1024, 'application/pdf'),
+('90000000-0000-4000-a000-000000000002', '80000000-0000-4000-a000-000000000002', 1, 'path/health', 1024, 'application/pdf')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.workflow_definitions (id, tenant_id, code, name, module) VALUES 
+('a0000000-0000-4000-a000-000000000001', '00000000-0000-4000-a000-000000000001', 'SED_WF', 'SED Workflow', 'HR'),
+('a0000000-0000-4000-a000-000000000002', '00000000-0000-4000-a000-000000000002', 'HEALTH_WF', 'Health Workflow', 'HR')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.workflow_versions (id, workflow_id, version_number, is_active) VALUES 
+('b0000000-0000-4000-a000-000000000001', 'a0000000-0000-4000-a000-000000000001', 1, true),
+('b0000000-0000-4000-a000-000000000002', 'a0000000-0000-4000-a000-000000000002', 1, true)
+ON CONFLICT (id) DO NOTHING;
+
+SELECT pass('Seed data execution complete');
+SELECT * FROM finish();

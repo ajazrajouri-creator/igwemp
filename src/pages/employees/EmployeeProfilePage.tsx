@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEmployeeProfile, useEmployeePostings } from '../../hooks/queries/useEmployees';
 import { ArrowLeft, User, Briefcase, FileText, Settings, Award, Edit, Shield } from 'lucide-react';

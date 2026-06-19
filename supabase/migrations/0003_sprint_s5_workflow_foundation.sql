@@ -257,28 +257,120 @@ CREATE TRIGGER trg_assignment_templates_updated_at BEFORE UPDATE ON public.assig
 
 
 -- Apply RLS and Audit Triggers to all S5 tables
-DO $$
-DECLARE
-  table_name text;
-  tables text[] := ARRAY[
-    'documents', 'document_versions', 'document_links',
-    'workflow_definitions', 'workflow_versions', 'workflow_states', 'workflow_transitions',
-    'orders', 'cases', 'work_items', 'action_taken_reports',
-    'escalation_rules', 'escalations',
-    'notification_templates', 'notifications',
-    'form_templates', 'form_fields',
-    'assignment_templates', 'template_tasks'
-  ];
-BEGIN
-  FOREACH table_name IN ARRAY tables LOOP
-    EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY;', table_name);
-    
-    -- Documents, versions, links shouldn't strictly require tenant_id for linking purposes but our tables have it or rely on parent
-    IF table_name NOT IN ('document_versions', 'document_links', 'workflow_versions', 'workflow_states', 'workflow_transitions', 'form_fields', 'template_tasks') THEN
-      EXECUTE format('CREATE POLICY "tenant_isolation_policy" ON public.%I FOR ALL USING (tenant_id = get_current_tenant_id());', table_name);
+-- Apply RLS and Audit Triggers to all S5 tables explicitly
+-- 1. documents
+ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.documents FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_documents AFTER INSERT OR UPDATE OR DELETE ON public.documents FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
 
-    END IF;
+-- 2. document_versions (Parent: documents)
+ALTER TABLE public.document_versions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.document_versions FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.documents d WHERE d.id = document_versions.document_id AND d.tenant_id = get_current_tenant_id())
+);
+CREATE TRIGGER trg_audit_document_versions AFTER INSERT OR UPDATE OR DELETE ON public.document_versions FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
 
-    EXECUTE format('CREATE TRIGGER trg_audit_%I AFTER INSERT OR UPDATE OR DELETE ON public.%I FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();', table_name, table_name);
-  END LOOP;
-END $$;
+-- 3. document_links (Parent: documents)
+ALTER TABLE public.document_links ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.document_links FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.documents d WHERE d.id = document_links.document_id AND d.tenant_id = get_current_tenant_id())
+);
+CREATE TRIGGER trg_audit_document_links AFTER INSERT OR UPDATE OR DELETE ON public.document_links FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 4. workflow_definitions
+ALTER TABLE public.workflow_definitions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.workflow_definitions FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_workflow_definitions AFTER INSERT OR UPDATE OR DELETE ON public.workflow_definitions FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 5. workflow_versions (Parent: workflow_definitions)
+ALTER TABLE public.workflow_versions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.workflow_versions FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.workflow_definitions wd WHERE wd.id = workflow_versions.workflow_id AND wd.tenant_id = get_current_tenant_id())
+);
+CREATE TRIGGER trg_audit_workflow_versions AFTER INSERT OR UPDATE OR DELETE ON public.workflow_versions FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 6. workflow_states (Parent: workflow_versions -> workflow_definitions)
+ALTER TABLE public.workflow_states ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.workflow_states FOR ALL USING (
+  EXISTS (
+    SELECT 1 FROM public.workflow_versions wv 
+    JOIN public.workflow_definitions wd ON wd.id = wv.workflow_id
+    WHERE wv.id = workflow_states.workflow_version_id AND wd.tenant_id = get_current_tenant_id()
+  )
+);
+CREATE TRIGGER trg_audit_workflow_states AFTER INSERT OR UPDATE OR DELETE ON public.workflow_states FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 7. workflow_transitions (Parent: workflow_versions -> workflow_definitions)
+ALTER TABLE public.workflow_transitions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.workflow_transitions FOR ALL USING (
+  EXISTS (
+    SELECT 1 FROM public.workflow_versions wv 
+    JOIN public.workflow_definitions wd ON wd.id = wv.workflow_id
+    WHERE wv.id = workflow_transitions.workflow_version_id AND wd.tenant_id = get_current_tenant_id()
+  )
+);
+CREATE TRIGGER trg_audit_workflow_transitions AFTER INSERT OR UPDATE OR DELETE ON public.workflow_transitions FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 8. orders
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.orders FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_orders AFTER INSERT OR UPDATE OR DELETE ON public.orders FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 9. cases
+ALTER TABLE public.cases ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.cases FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_cases AFTER INSERT OR UPDATE OR DELETE ON public.cases FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 10. work_items
+ALTER TABLE public.work_items ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.work_items FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_work_items AFTER INSERT OR UPDATE OR DELETE ON public.work_items FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 11. action_taken_reports
+ALTER TABLE public.action_taken_reports ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.action_taken_reports FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_action_taken_reports AFTER INSERT OR UPDATE OR DELETE ON public.action_taken_reports FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 12. escalation_rules
+ALTER TABLE public.escalation_rules ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.escalation_rules FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_escalation_rules AFTER INSERT OR UPDATE OR DELETE ON public.escalation_rules FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 13. escalations
+ALTER TABLE public.escalations ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.escalations FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_escalations AFTER INSERT OR UPDATE OR DELETE ON public.escalations FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 14. notification_templates
+ALTER TABLE public.notification_templates ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.notification_templates FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_notification_templates AFTER INSERT OR UPDATE OR DELETE ON public.notification_templates FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 15. notifications
+ALTER TABLE public.notifications ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.notifications FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_notifications AFTER INSERT OR UPDATE OR DELETE ON public.notifications FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 16. form_templates
+ALTER TABLE public.form_templates ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.form_templates FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_form_templates AFTER INSERT OR UPDATE OR DELETE ON public.form_templates FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 17. form_fields (Parent: form_templates)
+ALTER TABLE public.form_fields ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.form_fields FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.form_templates ft WHERE ft.id = form_fields.form_template_id AND ft.tenant_id = get_current_tenant_id())
+);
+CREATE TRIGGER trg_audit_form_fields AFTER INSERT OR UPDATE OR DELETE ON public.form_fields FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 18. assignment_templates
+ALTER TABLE public.assignment_templates ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.assignment_templates FOR ALL USING (tenant_id = get_current_tenant_id());
+CREATE TRIGGER trg_audit_assignment_templates AFTER INSERT OR UPDATE OR DELETE ON public.assignment_templates FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();
+
+-- 19. template_tasks (Parent: assignment_templates)
+ALTER TABLE public.template_tasks ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "tenant_isolation_policy" ON public.template_tasks FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.assignment_templates at WHERE at.id = template_tasks.template_id AND at.tenant_id = get_current_tenant_id())
+);
+CREATE TRIGGER trg_audit_template_tasks AFTER INSERT OR UPDATE OR DELETE ON public.template_tasks FOR EACH ROW EXECUTE FUNCTION audit_trigger_func();

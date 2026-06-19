@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - s6-2-ci-validation
   pull_request:
   workflow_dispatch:
 
@@ -43,7 +44,7 @@ jobs:
         run: supabase test db
 
       - name: Serve Edge Functions (Background)
-        run: supabase functions serve employee-import &
+        run: supabase functions serve employee-import --no-verify-jwt &
         
       - name: Wait for Edge Functions to start
         run: sleep 5

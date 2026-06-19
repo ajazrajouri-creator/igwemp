@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDelegations } from '../../hooks/queries/useDelegations';
 import { Plus, ArrowRightLeft } from 'lucide-react';
 

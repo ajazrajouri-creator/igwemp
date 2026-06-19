@@ -1,6 +1,5 @@
-import React from 'react';
 import { useRoles, usePolicies } from '../../hooks/queries/useRoles';
-import { Plus, Shield, KeyRound } from 'lucide-react';
+import {  Shield, KeyRound } from 'lucide-react';
 
 export function AdminRolesPoliciesPage() {
   const { data: roles, isLoading: rolesLoading } = useRoles();

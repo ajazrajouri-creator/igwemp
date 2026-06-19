@@ -11,6 +11,7 @@ import {
   Bell, Settings, ChevronDown, ChevronRight,
   Shield, FileSignature, UserCheck, Briefcase,
   AlertTriangle, CheckSquare, Clock, GitBranch,
+  GraduationCap, Home, UserCircle, Search,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { ROUTES } from '../../lib/constants';
@@ -94,6 +95,70 @@ function useNavItems(unreadCount: number, overdueCount: number) {
       icon: <School size={16} />,
       to: ROUTES.SCHOOLS,
     },
+    {
+      label: 'Students',
+      icon: <Users size={16} />,
+      children: [
+        { label: 'Student Register', icon: <FileText size={14} />, to: '/students' },
+        { label: 'Bulk Import', icon: <FileText size={14} />, to: '/students/import' },
+      ],
+    },
+    {
+      label: 'Enrollment',
+      icon: <CheckSquare size={16} />,
+      children: [
+        { label: 'Submit Enrollment', icon: <FileText size={14} />, to: '/enrollment/submission' },
+        { label: 'Review Submissions', icon: <Shield size={14} />, to: '/enrollment/review' },
+      ],
+    },
+    {
+      label: 'Post Census',
+      icon: <Building2 size={16} />,
+      children: [
+        { label: 'Submit Census', icon: <FileText size={14} />, to: '/posts/census' },
+        { label: 'Review Census', icon: <Shield size={14} />, to: '/posts/review' },
+      ],
+    },
+    {
+      label: 'Infrastructure',
+      icon: <Building2 size={16} />,
+      children: [
+        { label: 'Submit Census', icon: <FileText size={14} />, to: '/infrastructure/census' },
+        { label: 'Review Census', icon: <Shield size={14} />, to: '/infrastructure/review' },
+      ],
+    },
+
+    // ── S9.1 SCHOOL PORTAL (HOI) ─────────────────────────────
+    {
+      label: 'School Portal',
+      icon: <Home size={16} />,
+      children: [
+        { label: 'School Dashboard', icon: <LayoutDashboard size={14} />, to: '/school/dashboard' },
+        { label: 'Add Student', icon: <GraduationCap size={14} />, to: '/students/new' },
+      ],
+    },
+
+    // ── S9.1 MY PROFILE (Employee/Teacher) ───────────────────
+    {
+      label: 'My Profile',
+      icon: <UserCircle size={16} />,
+      children: [
+        { label: 'View My Profile', icon: <UserCircle size={14} />, to: '/employee/self-service' },
+        { label: 'Request Correction', icon: <FileText size={14} />, to: '/employee/update-request' },
+      ],
+    },
+
+    // ── S9.1 REVIEW HUB (ZEO/CEO) ────────────────────────────
+    {
+      label: 'Review Hub',
+      icon: <Search size={16} />,
+      children: [
+        { label: 'ZEO Review Dashboard', icon: <Shield size={14} />, to: '/zeo/review' },
+        { label: 'Enrollment Review', icon: <GraduationCap size={14} />, to: '/enrollment/review' },
+        { label: 'Infrastructure Review', icon: <Building2 size={14} />, to: '/infrastructure/review' },
+        { label: 'Post Census Review', icon: <ClipboardList size={14} />, to: '/posts/review' },
+      ],
+    },
 
     // ── REPORTING (secondary — ADJ-06) ───────────────────────
     {
@@ -101,6 +166,9 @@ function useNavItems(unreadCount: number, overdueCount: number) {
       icon: <BarChart3 size={16} />,
       children: [
         { label: 'My Dashboard', icon: <LayoutDashboard size={14} />, to: ROUTES.DASHBOARDS },
+        { label: 'Vacancy Dashboard', icon: <BarChart3 size={14} />, to: '/reports/vacancy' },
+        { label: 'Deficiency Dashboard', icon: <AlertTriangle size={14} />, to: '/reports/deficiency' },
+        { label: 'Enrollment Dashboard', icon: <BarChart3 size={14} />, to: '/reports/enrollment' },
         { label: 'Standard Reports', icon: <FileText size={14} />, to: ROUTES.REPORTS },
       ],
     },
@@ -126,6 +194,7 @@ function useNavItems(unreadCount: number, overdueCount: number) {
         { label: 'User Provisioning', icon: <Users size={14} />, to: ROUTES.ADMIN_USERS },
         { label: 'Responsibility Types', icon: <Briefcase size={14} />, to: ROUTES.ADMIN_RESPONSIBILITIES },
         { label: 'Workflow Templates', icon: <GitBranch size={14} />, to: ROUTES.ADMIN_WORKFLOWS },
+        { label: 'Post Management', icon: <Building2 size={14} />, to: '/admin/posts' },
         { label: 'System Monitor', icon: <BarChart3 size={14} />, to: ROUTES.ADMIN_SYSTEM },
       ],
     });
@@ -289,30 +358,30 @@ export function Sidebar({ collapsed, onToggle, unreadCount, overdueCount }: Side
 
         {!collapsed && <div className="sidebar-section-label mt-3">Governance</div>}
         <div className={collapsed ? 'mt-2' : ''}>
-          {navItems.slice(3, 5).map((item) => (
+          {navItems.slice(3, 6).map((item) => (
             <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
           ))}
         </div>
 
         {!collapsed && <div className="sidebar-section-label mt-3">Education</div>}
         <div className={collapsed ? 'mt-2' : ''}>
-          {navItems.slice(5, 7).map((item) => (
+          {navItems.slice(6, 12).map((item) => (
             <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
           ))}
         </div>
 
         {!collapsed && <div className="sidebar-section-label mt-3">Reporting</div>}
         <div className={collapsed ? 'mt-2' : ''}>
-          {navItems.slice(7, 9).map((item) => (
+          {navItems.slice(12, 14).map((item) => (
             <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
           ))}
         </div>
 
-        {navItems.length > 9 && (
+        {navItems.length > 14 && (
           <>
             {!collapsed && <div className="sidebar-section-label mt-3">System</div>}
             <div className={collapsed ? 'mt-2' : ''}>
-              {navItems.slice(9).map((item) => (
+              {navItems.slice(14).map((item) => (
                 <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
               ))}
             </div>

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useResponsibilityTypes, usePersonResponsibilities } from '../../hooks/queries/useResponsibilities';
 import { Plus, Award } from 'lucide-react';
 

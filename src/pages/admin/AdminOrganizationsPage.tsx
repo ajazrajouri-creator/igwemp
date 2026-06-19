@@ -1,4 +1,3 @@
-import React from 'react';
 import { useTenants } from '../../hooks/queries/useTenants';
 import { Plus } from 'lucide-react';
 

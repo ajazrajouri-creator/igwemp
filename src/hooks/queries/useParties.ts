@@ -1,13 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
-import type { Party, PersonParty, OrgParty, EmployeeProfile } from '../../types';
+import type {    EmployeeProfile } from '../../types';
 
 export const partyKeys = {
   all: ['parties'] as const,
   persons: () => [...partyKeys.all, 'persons'] as const,
   orgs: () => [...partyKeys.all, 'orgs'] as const,
-  employees: () => [...partyKeys.all, 'employees'] as const,
-};
+  employees: () => [...partyKeys.all, 'employees'] as const};
 
 export function usePersonParties() {
   return useQuery({
@@ -21,8 +20,7 @@ export function usePersonParties() {
       
       if (error) throw error;
       return data;
-    },
-  });
+    }});
 }
 
 export function useOrgParties() {
@@ -35,8 +33,7 @@ export function useOrgParties() {
       
       if (error) throw error;
       return data;
-    },
-  });
+    }});
 }
 
 export function useEmployeeProfiles() {
@@ -49,6 +46,5 @@ export function useEmployeeProfiles() {
       
       if (error) throw error;
       return data as EmployeeProfile[];
-    },
-  });
+    }});
 }

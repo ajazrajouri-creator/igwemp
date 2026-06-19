@@ -1,5 +1,4 @@
-import React from 'react';
-import { Settings, MapPin, Briefcase, Award, Shield, FileText } from 'lucide-react';
+import { Settings,   Award, Shield, FileText } from 'lucide-react';
 
 export function EmployeePostingTimeline({ postings }: { postings: any[] }) {
   if (!postings || postings.length === 0) {

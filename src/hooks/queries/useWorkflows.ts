@@ -1,14 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
-import type { WorkflowDefinition, WorkflowVersion, WorkflowState, WorkflowTransition } from '../../types';
+import type { WorkflowDefinition, WorkflowVersion, WorkflowState} from '../../types';
 
 export const workflowKeys = {
   all: ['workflows'] as const,
   versions: (defId: string) => [...workflowKeys.all, 'versions', defId] as const,
   activeVersion: (defId: string) => [...workflowKeys.all, 'active_version', defId] as const,
   states: (versionId: string) => [...workflowKeys.all, 'states', versionId] as const,
-  transitions: (versionId: string) => [...workflowKeys.all, 'transitions', versionId] as const,
-};
+  transitions: (versionId: string) => [...workflowKeys.all, 'transitions', versionId] as const};
 
 export function useWorkflowDefinitions() {
   return useQuery({
@@ -21,8 +20,7 @@ export function useWorkflowDefinitions() {
       
       if (error) throw error;
       return data as WorkflowDefinition[];
-    },
-  });
+    }});
 }
 
 export function useWorkflowVersions(definitionId: string) {
@@ -38,8 +36,7 @@ export function useWorkflowVersions(definitionId: string) {
       if (error) throw error;
       return data as WorkflowVersion[];
     },
-    enabled: !!definitionId,
-  });
+    enabled: !!definitionId});
 }
 
 export function useWorkflowStates(versionId: string) {
@@ -54,6 +51,5 @@ export function useWorkflowStates(versionId: string) {
       if (error) throw error;
       return data as WorkflowState[];
     },
-    enabled: !!versionId,
-  });
+    enabled: !!versionId});
 }

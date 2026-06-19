@@ -7,10 +7,9 @@ import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertTriangle, Clock, Calendar, ListTodo, CheckCircle2,
-  Filter, RefreshCw, ChevronDown, ChevronRight, ExternalLink,
-  Zap, ArrowRight, MoreHorizontal, Inbox, TrendingUp,
-  FileText, CheckSquare, ClipboardCheck, Search, X,
-} from 'lucide-react';
+   RefreshCw, ChevronDown, ChevronRight,
+  ArrowRight, Inbox, TrendingUp,
+  FileText, CheckSquare, ClipboardCheck, Search, X} from 'lucide-react';
 import { cn, formatDate, getDaysOverdue, getDaysUntilDue } from '../../lib/utils';
 import { PRIORITY_CONFIG, CASE_STATUS_CONFIG } from '../../lib/constants';
 import { MOCK_WORK_QUEUE_ITEMS } from '../../lib/mockData';
@@ -39,8 +38,7 @@ const ITEM_TYPE_ICONS: Record<WorkQueueItemType, React.ReactNode> = {
   ATR: <ClipboardCheck size={14} />,
   VERIFICATION: <CheckCircle2 size={14} />,
   INSPECTION: <Search size={14} />,
-  INFORMATION: <Inbox size={14} />,
-};
+  INFORMATION: <Inbox size={14} />};
 
 const ITEM_TYPE_LABELS: Record<WorkQueueItemType, string> = {
   CASE: 'Case',
@@ -48,8 +46,7 @@ const ITEM_TYPE_LABELS: Record<WorkQueueItemType, string> = {
   ATR: 'ATR',
   VERIFICATION: 'Verification',
   INSPECTION: 'Inspection',
-  INFORMATION: 'Information',
-};
+  INFORMATION: 'Information'};
 
 function WorkItemCard({ item, onOpen }: { item: WorkQueueItem; onOpen: (id: string) => void }) {
   const cfg = PRIORITY_CONFIG[item.priority];
@@ -59,7 +56,7 @@ function WorkItemCard({ item, onOpen }: { item: WorkQueueItem; onOpen: (id: stri
 
   const caseTypeLabel = item.case?.case_type
     .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase()) || 'Case';
+    .replace(/\b\w/g, (c: string) => c.toUpperCase()) || 'Case';
 
   return (
     <div
@@ -138,8 +135,7 @@ function PriorityLane({
   priority,
   items,
   onOpen,
-  defaultExpanded = true,
-}: {
+  defaultExpanded = true}: {
   priority: WorkQueuePriority;
   items: WorkQueueItem[];
   onOpen: (id: string) => void;
@@ -211,8 +207,9 @@ export function MyWorkQueuePage() {
   const groupedItems = useMemo(() => {
     const groups: Partial<Record<WorkQueuePriority, WorkQueueItem[]>> = {};
     for (const item of filteredItems) {
-      if (!groups[item.priority]) groups[item.priority] = [];
-      groups[item.priority]!.push(item);
+      const key = item.priority as WorkQueuePriority;
+      if (!groups[key]) groups[key] = [];
+      groups[key]!.push(item);
     }
     return groups;
   }, [filteredItems]);
@@ -222,8 +219,7 @@ export function MyWorkQueuePage() {
     overdue: MOCK_WORK_QUEUE_ITEMS.filter((i) => i.priority === 'OVERDUE').length,
     dueToday: MOCK_WORK_QUEUE_ITEMS.filter((i) => i.priority === 'DUE_TODAY').length,
     pending: MOCK_WORK_QUEUE_ITEMS.filter((i) => ['IN_PROGRESS', 'UNASSIGNED'].includes(i.status)).length,
-    pendingApproval: MOCK_WORK_QUEUE_ITEMS.filter((i) => i.status === 'SUBMITTED').length,
-  };
+    pendingApproval: MOCK_WORK_QUEUE_ITEMS.filter((i) => i.status === 'SUBMITTED').length};
 
   const handleOpen = (caseId: string) => {
     navigate(`/cases/${caseId}`);

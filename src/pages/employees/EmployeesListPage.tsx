@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useEmployees } from '../../hooks/queries/useEmployees';
-import { Users, Filter, Search, ChevronRight, MapPin, Briefcase } from 'lucide-react';
+import { Users, Filter, Search,  MapPin, Briefcase } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function EmployeesListPage() {

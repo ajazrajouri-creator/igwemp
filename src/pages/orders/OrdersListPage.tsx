@@ -1,4 +1,3 @@
-import React from 'react';
 import { useOrders } from '../../hooks/queries/useOrders';
 import { FileText, Plus, Search, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

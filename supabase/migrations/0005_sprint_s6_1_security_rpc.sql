@@ -58,7 +58,7 @@ UNION ALL
 SELECT s.employee_id, d.id, s.subject_id
 FROM public.employee_subjects s
 JOIN public.scope_dimensions d ON d.code = 'EMPLOYEE_SUBJECT' AND d.tenant_id = s.tenant_id
-WHERE s.is_primary = true AND s.status = 'ACTIVE' AND s.effective_to IS NULL;
+WHERE s.is_primary = true AND s.effective_to IS NULL;
 -- (SCHOOL_TYPE and EMPLOYMENT_STATUS can be added similarly)
 
 -- 3. Hardened can_access_employee (SECURITY DEFINER, schema-qualified, SET search_path = '')

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSectionQueue } from '../../hooks/queries/useWorkQueue';
-import { Inbox, Play, CheckCircle, AlertTriangle, FileUp, ChevronRight } from 'lucide-react';
+import { Inbox, Play, CheckCircle, AlertTriangle, FileUp} from 'lucide-react';
 import { useAuth } from '../../core/auth/AuthContext';
 
 export function SectionQueuePage() {
-  const { user } = useAuth();
+  useAuth();
   // Using a stub section ID for the demo
   const mockSectionId = '11111111-1111-1111-1111-111111111111';
   const { data: queueItems, isLoading } = useSectionQueue(mockSectionId);
