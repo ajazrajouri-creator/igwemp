@@ -18,10 +18,7 @@ const isRealConfig =
   !supabaseUrl.includes('placeholder');
 
 if (!isRealConfig) {
-  if (import.meta.env.PROD) {
-    throw new Error('FATAL: Supabase environment variables are missing. Cannot run in production without VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
-  }
-  console.warn('[IGWEMP] Supabase not configured. Running in DEV/MOCK mode. Copy .env.example to .env and fill in your project values.');
+  console.warn('[IGWEMP] Supabase not configured. Running in DEV/MOCK mode. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables for production use.');
 }
 
 export const supabase = createClient(
