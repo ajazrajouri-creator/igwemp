@@ -55,14 +55,14 @@ $$;
 -- 2. Seed Master Data Categories
 INSERT INTO public.master_data_categories (id, tenant_id, code, name, description)
 VALUES 
-  (uuid_generate_v4(), public.get_current_tenant_id(), 'DRINKING_WATER_SOURCE', 'Drinking Water Source', 'Source of drinking water'),
-  (uuid_generate_v4(), public.get_current_tenant_id(), 'BOUNDARY_WALL_TYPE', 'Boundary Wall Type', 'Type of boundary wall'),
-  (uuid_generate_v4(), public.get_current_tenant_id(), 'BUILDING_CONDITION', 'Building Condition', 'Condition of building'),
-  (uuid_generate_v4(), public.get_current_tenant_id(), 'TOILET_CONDITION', 'Toilet Condition', 'Condition of toilet'),
-  (uuid_generate_v4(), public.get_current_tenant_id(), 'ELECTRICITY_STATUS', 'Electricity Status', 'Status of electricity'),
-  (uuid_generate_v4(), public.get_current_tenant_id(), 'INTERNET_STATUS', 'Internet Status', 'Status of internet'),
-  (uuid_generate_v4(), public.get_current_tenant_id(), 'DEFICIENCY_SEVERITY', 'Deficiency Severity', 'Severity of deficiency'),
-  (uuid_generate_v4(), public.get_current_tenant_id(), 'EVIDENCE_CATEGORY', 'Evidence Category', 'Category of evidence')
+  (uuid_generate_v4(), (SELECT id FROM public.tenants LIMIT 1), 'DRINKING_WATER_SOURCE', 'Drinking Water Source', 'Source of drinking water'),
+  (uuid_generate_v4(), (SELECT id FROM public.tenants LIMIT 1), 'BOUNDARY_WALL_TYPE', 'Boundary Wall Type', 'Type of boundary wall'),
+  (uuid_generate_v4(), (SELECT id FROM public.tenants LIMIT 1), 'BUILDING_CONDITION', 'Building Condition', 'Condition of building'),
+  (uuid_generate_v4(), (SELECT id FROM public.tenants LIMIT 1), 'TOILET_CONDITION', 'Toilet Condition', 'Condition of toilet'),
+  (uuid_generate_v4(), (SELECT id FROM public.tenants LIMIT 1), 'ELECTRICITY_STATUS', 'Electricity Status', 'Status of electricity'),
+  (uuid_generate_v4(), (SELECT id FROM public.tenants LIMIT 1), 'INTERNET_STATUS', 'Internet Status', 'Status of internet'),
+  (uuid_generate_v4(), (SELECT id FROM public.tenants LIMIT 1), 'DEFICIENCY_SEVERITY', 'Deficiency Severity', 'Severity of deficiency'),
+  (uuid_generate_v4(), (SELECT id FROM public.tenants LIMIT 1), 'EVIDENCE_CATEGORY', 'Evidence Category', 'Category of evidence')
 ON CONFLICT DO NOTHING;
 
 -- 3. Infrastructure Census Cycles
