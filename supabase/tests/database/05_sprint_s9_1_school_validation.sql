@@ -1,6 +1,6 @@
 BEGIN;
 
-SELECT plan(15);
+SELECT plan(22);
 
 -- 1. Setup Test Data
 SELECT * FROM setup_test_tenant();
@@ -58,7 +58,7 @@ BEGIN
 
   -- Test 2: Employee can submit an update request
   v_req_1_id := public.submit_employee_update_request(
-    'PROFILE_CORRECTION',
+    'NAME_CORRECTION',
     'Typo in name',
     '{"first_name": "New Name"}'::jsonb
   );
@@ -124,11 +124,67 @@ BEGIN
     'ZEO A can approve the request'
   );
 
-  -- Test 10: Approved request has audit log
+  -- Test 10: Approved request has audit log for APPROVE (NAME_CORRECTION does not auto-apply)
   PERFORM results_eq(
     $$SELECT count(*)::int FROM public.audit_logs WHERE entity_id = '$$ || v_req_1_id || $$' AND action = 'APPROVE'$$,
     ARRAY[1],
-    'Audit log created for approve'
+    'Audit log created for approve only'
+  );
+
+  -- Test 11: Request status is APPROVED
+  PERFORM results_eq(
+    $$SELECT status FROM public.employee_change_requests WHERE id = '$$ || v_req_1_id || $$'$$,
+    ARRAY['APPROVED'],
+    'Status remains APPROVED for NAME_CORRECTION'
+  );
+
+  -- Test 12: Employee cannot apply own request directly
+  EXECUTE format('SET request.jwt.claims TO ''{"sub": "%s"}''', v_teacher_ps_a_id);
+  v_req_2_id := public.submit_employee_update_request(
+    'MOBILE_UPDATE',
+    'New number',
+    '{"mobile_no": "9999999999"}'::jsonb
+  );
+  
+  BEGIN
+    PERFORM public.approve_employee_update_request(v_req_2_id, 'Self approve');
+    PERFORM fail('Employee should not be able to self-approve/apply');
+  EXCEPTION WHEN OTHERS THEN
+    PERFORM pass('Employee blocked from self-approving/applying');
+  END;
+
+  -- Test 13: Withdrawing request prevents applying
+  UPDATE public.employee_change_requests SET status = 'WITHDRAWN' WHERE id = v_req_2_id;
+  EXECUTE format('SET request.jwt.claims TO ''{"sub": "%s"}''', v_zeo_a_id);
+  BEGIN
+    PERFORM public.approve_employee_update_request(v_req_2_id, 'Approve withdrawn');
+    PERFORM fail('Cannot approve withdrawn request');
+  EXCEPTION WHEN OTHERS THEN
+    PERFORM pass('Cannot approve withdrawn request');
+  END;
+
+  -- Test 14: Mobile number actually changed in person_parties after new request
+  EXECUTE format('SET request.jwt.claims TO ''{"sub": "%s"}''', v_teacher_ps_a_id);
+  v_req_2_id := public.submit_employee_update_request(
+    'MOBILE_UPDATE',
+    'Update mobile',
+    '{"mobile_no": "5551234"}'::jsonb
+  );
+  
+  EXECUTE format('SET request.jwt.claims TO ''{"sub": "%s"}''', v_zeo_a_id);
+  PERFORM public.approve_employee_update_request(v_req_2_id, 'Ok');
+
+  PERFORM results_eq(
+    $$SELECT mobile_no FROM public.person_parties WHERE party_id = (SELECT person_party_id FROM public.employee_profiles WHERE user_id = '$$ || v_teacher_ps_a_id || $$' LIMIT 1)$$,
+    ARRAY['5551234'],
+    'Mobile number was updated in person_parties'
+  );
+  
+  -- Test 15: Mobile update request status is APPLIED
+  PERFORM results_eq(
+    $$SELECT status FROM public.employee_change_requests WHERE id = '$$ || v_req_2_id || $$'$$,
+    ARRAY['APPLIED'],
+    'Status changed to APPLIED for MOBILE_UPDATE'
   );
 
   -- 11. HSS Enrollment test (Strict Check)
