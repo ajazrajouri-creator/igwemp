@@ -1,6 +1,6 @@
 BEGIN;
 
-SELECT plan(22);
+SELECT plan(16);
 
 -- 1. Setup Test Data
 SELECT * FROM setup_test_tenant();
