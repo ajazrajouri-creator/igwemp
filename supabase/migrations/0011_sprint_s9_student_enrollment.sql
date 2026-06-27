@@ -769,7 +769,12 @@ CREATE POLICY "student_profiles_select" ON public.student_profiles FOR SELECT US
 );
 -- We allow HOI to insert/update based on them creating the enrollment later, so we check if they belong to a school
 CREATE POLICY "student_profiles_insert" ON public.student_profiles FOR INSERT WITH CHECK (
-  EXISTS (SELECT 1 FROM public.user_office_roles uor WHERE uor.user_id = auth.uid() AND uor.tenant_id = public.get_current_tenant_id())
+  EXISTS (
+    SELECT 1 FROM public.role_assignments ra 
+    JOIN public.user_accounts ua ON ra.user_id = ua.id 
+    WHERE ua.supabase_auth_id = auth.uid() 
+    AND ra.tenant_id = public.get_current_tenant_id()
+  )
 );
 CREATE POLICY "student_profiles_update" ON public.student_profiles FOR UPDATE USING (
   EXISTS (
