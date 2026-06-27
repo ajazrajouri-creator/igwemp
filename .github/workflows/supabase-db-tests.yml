@@ -45,20 +45,28 @@ jobs:
           ls -la supabase
 
       - name: Start Supabase Local Stack
-        run: supabase start
+        run: supabase start > start_log.txt 2>&1 || true
 
       - name: Failure Diagnostics
-        if: failure()
+        if: always()
         run: |
-          echo "=== DOCKER PS ==="
-          docker ps -a
-          echo "=== SUPABASE STATUS ==="
-          supabase status || true
-          echo "=== SUPABASE LOGS ==="
-          docker logs supabase_db_igwemp || true
-          docker logs supabase_rest_igwemp || true
-          docker logs supabase_auth_igwemp || true
-          docker logs supabase_api_igwemp || true
+          echo "=== SUPABASE START LOG ===" > diag_log.txt
+          cat start_log.txt >> diag_log.txt
+          echo "=== DOCKER PS ===" >> diag_log.txt
+          docker ps -a >> diag_log.txt 2>&1 || true
+          echo "=== SUPABASE STATUS ===" >> diag_log.txt
+          supabase status >> diag_log.txt 2>&1 || true
+          echo "=== SUPABASE LOGS ===" >> diag_log.txt
+          docker logs supabase_db_igwemp >> diag_log.txt 2>&1 || true
+
+      - name: Commit Logs
+        if: always()
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add diag_log.txt
+          git commit -m "chore: add diag logs [skip ci]" || true
+          git push
 
       - name: Reset Database and Apply Migrations & Seeds
         run: supabase db reset
