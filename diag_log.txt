@@ -1,0 +1,10 @@
+=== SUPABASE START LOG ===
+cannot read config in /home/runner/work/igwemp/igwemp: open supabase/config.toml: no such file or directory
+Have you set up the project with supabase init?
+=== DOCKER PS ===
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+=== SUPABASE STATUS ===
+cannot read config in /home/runner/work/igwemp/igwemp: open supabase/config.toml: no such file or directory
+Have you set up the project with supabase init?
+=== SUPABASE LOGS ===
+Error response from daemon: No such container: supabase_db_igwemp
