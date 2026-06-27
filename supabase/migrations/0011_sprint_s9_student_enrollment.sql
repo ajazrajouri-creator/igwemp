@@ -198,8 +198,8 @@ CREATE TABLE IF NOT EXISTS public.student_enrollments (
   deleted_at timestamptz
 );
 
-CREATE UNIQUE INDEX idx_student_enrollments_active ON public.student_enrollments (tenant_id, student_id, academic_session_id) 
-WHERE deleted_at IS NULL AND enrollment_status_id IN (SELECT id FROM public.master_data_items WHERE code = 'ACTIVE');
+CREATE INDEX idx_student_enrollments_lookup ON public.student_enrollments (tenant_id, student_id, academic_session_id) 
+WHERE deleted_at IS NULL;
 
 -- student_enrollment_events
 CREATE TABLE IF NOT EXISTS public.student_enrollment_events (
