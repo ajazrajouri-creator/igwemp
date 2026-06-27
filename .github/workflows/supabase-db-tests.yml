@@ -32,10 +32,33 @@ jobs:
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 1.145.4
+
+      - name: Diagnostics Before Start
+        run: |
+          docker --version
+          docker compose version
+          docker info
+          supabase --version
+          pwd
+          ls -la
+          ls -la supabase
 
       - name: Start Supabase Local Stack
         run: supabase start
+
+      - name: Failure Diagnostics
+        if: failure()
+        run: |
+          echo "=== DOCKER PS ==="
+          docker ps -a
+          echo "=== SUPABASE STATUS ==="
+          supabase status || true
+          echo "=== SUPABASE LOGS ==="
+          docker logs supabase_db_igwemp || true
+          docker logs supabase_rest_igwemp || true
+          docker logs supabase_auth_igwemp || true
+          docker logs supabase_api_igwemp || true
 
       - name: Reset Database and Apply Migrations & Seeds
         run: supabase db reset
