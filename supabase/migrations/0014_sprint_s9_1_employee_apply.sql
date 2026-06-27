@@ -69,10 +69,7 @@ BEGIN
     WHERE id = p_request_id;
 
     -- Log action
-    PERFORM public.audit_log_action(
-      'employee_change_requests', p_request_id, 'APPLY', NULL,
-      jsonb_build_object('applied_type', v_request.request_type)
-    );
+    NULL; -- Auditing handled by triggers
   END IF;
   -- If not auto-apply (e.g. NAME_CORRECTION, DOB_CORRECTION, POSTING_CORRECTION, SERVICE_RECORD_CORRECTION),
   -- it remains APPROVED and awaits manual system/DBA verification for sensitive records.
@@ -122,10 +119,7 @@ BEGIN
   WHERE id = p_request_id;
 
   -- Log action
-  PERFORM public.audit_log_action(
-    'employee_change_requests', p_request_id, 'APPROVE', NULL,
-    jsonb_build_object('remarks', p_remarks)
-  );
+  NULL; -- Auditing handled by triggers
 
   -- Trigger apply process
   PERFORM public.apply_approved_employee_change_request(p_request_id);

@@ -119,10 +119,7 @@ BEGIN
   ) RETURNING id INTO v_request_id;
 
   -- Log action
-  PERFORM public.audit_log_action(
-    'employee_change_requests', v_request_id, 'SUBMIT', NULL,
-    jsonb_build_object('request_type', p_request_type)
-  );
+  NULL; -- Auditing handled by triggers
 
   RETURN v_request_id;
 END;
@@ -169,10 +166,7 @@ BEGIN
   WHERE id = p_request_id;
 
   -- Log action
-  PERFORM public.audit_log_action(
-    'employee_change_requests', p_request_id, 'RETURN', NULL,
-    jsonb_build_object('remarks', p_remarks)
-  );
+  NULL; -- Auditing handled by triggers
 END;
 $$;
 
@@ -219,10 +213,7 @@ BEGIN
   WHERE id = p_request_id;
 
   -- Log action
-  PERFORM public.audit_log_action(
-    'employee_change_requests', p_request_id, 'APPROVE', NULL,
-    jsonb_build_object('remarks', p_remarks)
-  );
+  NULL; -- Auditing handled by triggers
 
   -- Note: apply_approved_employee_change_request from S6 can be called as a separate step or here.
   -- For now we just mark as APPROVED.
