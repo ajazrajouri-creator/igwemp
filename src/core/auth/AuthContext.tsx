@@ -13,13 +13,13 @@ import type { UserAccount, RoleAssignment, SectionMembership } from '../../types
 const DEV_MODE = !isSupabaseConfigured;
 
 // ─── Mock data for Phase 1 dev (before Supabase schema) ──────
-const MOCK_USER: UserAccount = {
-  id: 'user-ceo-001',
-  user_id: 'user-ceo-001',
+const createMockUser = (id: string, username: string): UserAccount => ({
+  id,
+  user_id: id,
   tenant_id: 'sed-tenant-001',
   party_id: 'party-001',
-  supabase_auth_id: 'mock-auth-001',
-  username: 'ceo.anantnag',
+  supabase_auth_id: `mock-auth-${id}`,
+  username,
   status: 'ACTIVE',
   is_active: true,
   is_mfa_enabled: true,
@@ -43,39 +43,21 @@ const MOCK_USER: UserAccount = {
     is_active: true,
     deleted_at: null,
     mobile: '+91-9419000001',
-    email: 'ceo.anantnag@jksed.gov.in',
+    email: `${username}@jksed.gov.in`,
     created_at: '2026-01-01T00:00:00Z',
     updated_at: '2026-01-01T00:00:00Z',
   },
-  role_assignments: [
-    {
-      id: 'ra-001',
-      assignment_id: 'ra-001',
-      tenant_id: 'sed-tenant-001',
-      user_id: 'user-ceo-001',
-      role_id: 'role-ceo',
-      role_code: 'CEO',
-      office_id: 'office-ceo-anantnag',
-      section_id: null,
-      effective_from: '2024-08-01',
-      effective_to: null,
-      assigned_by: null,
-      assignment_reason: null,
-      assigned_order_id: null,
-      created_at: '2024-08-01T00:00:00Z',
-      updated_at: '2024-08-01T00:00:00Z',
-    },
-  ],
-};
+  role_assignments: []
+});
 
-const MOCK_ROLE_ASSIGNMENT: RoleAssignment = {
-  id: 'ra-001',
-  assignment_id: 'ra-001',
+const createMockRole = (userId: string, roleCode: string, officeId: string): RoleAssignment => ({
+  id: `ra-${userId}`,
+  assignment_id: `ra-${userId}`,
   tenant_id: 'sed-tenant-001',
-  user_id: 'user-ceo-001',
-  role_id: 'role-ceo',
-  role_code: 'CEO',
-  office_id: 'office-ceo-anantnag',
+  user_id: userId,
+  role_id: `role-${roleCode}`,
+  role_code: roleCode,
+  office_id: officeId,
   section_id: null,
   effective_from: '2024-08-01',
   effective_to: null,
@@ -84,7 +66,28 @@ const MOCK_ROLE_ASSIGNMENT: RoleAssignment = {
   assigned_order_id: null,
   created_at: '2024-08-01T00:00:00Z',
   updated_at: '2024-08-01T00:00:00Z',
+});
+
+const MOCK_PROFILES = {
+  CEO: {
+    user: createMockUser('user-ceo-001', 'ceo.rajouri'),
+    role: createMockRole('user-ceo-001', 'DISTRICT_ADMIN', 'office-ceo-rajouri'),
+  },
+  ZEO: {
+    user: createMockUser('user-zeo-001', 'zeo.peeri'),
+    role: createMockRole('user-zeo-001', 'ZONAL_ADMIN', 'office-zeo-peeri'),
+  },
+  HOI: {
+    user: createMockUser('user-hoi-001', 'hoi.hsspeeri'),
+    role: createMockRole('user-hoi-001', 'SCHOOL_HEAD', 'office-hss-peeri'),
+  },
+  TEACHER: {
+    user: createMockUser('user-tch-001', 'teacher.hsspeeri'),
+    role: createMockRole('user-tch-001', 'SCHOOL_EMPLOYEE', 'office-hss-peeri'),
+  }
 };
+
+type MockProfileKey = keyof typeof MOCK_PROFILES;
 
 // ─── Context Types ────────────────────────────────────────────
 interface AuthContextValue {
@@ -106,8 +109,10 @@ interface AuthContextValue {
   hasAnyRole: (roleCodes: string[]) => boolean;
   isSectionMember: (sectionId: string) => boolean;
   isSectionHead: (sectionId: string) => boolean;
+  
+  // Dev mode
+  switchDevRole?: (roleKey: MockProfileKey) => void;
 }
-
 
 // ─── Context ──────────────────────────────────────────────────
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -116,8 +121,17 @@ export const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [supabaseUser, setSupabaseUser] = useState<User | null>(null);
-  const [user, setUser] = useState<UserAccount | null>(DEV_MODE ? MOCK_USER : null);
-  const [primaryRole, setPrimaryRole] = useState<RoleAssignment | null>(DEV_MODE ? MOCK_ROLE_ASSIGNMENT : null);
+  
+  // Dev mode defaults to TEACHER
+  const [activeDevRole, setActiveDevRole] = useState<MockProfileKey>('TEACHER');
+  
+  const [user, setUser] = useState<UserAccount | null>(
+    DEV_MODE ? { ...MOCK_PROFILES[activeDevRole].user, role_assignments: [MOCK_PROFILES[activeDevRole].role] } : null
+  );
+  const [primaryRole, setPrimaryRole] = useState<RoleAssignment | null>(
+    DEV_MODE ? MOCK_PROFILES[activeDevRole].role : null
+  );
+  
   const [sectionMemberships, setSectionMemberships] = useState<SectionMembership[]>([]);
   const [isLoading, setIsLoading] = useState(!DEV_MODE);
 
@@ -184,8 +198,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = async (email: string, password: string): Promise<{ error: string | null }> => {
     if (DEV_MODE) {
       // In dev mode, any credentials work
-      setUser(MOCK_USER);
-      setPrimaryRole(MOCK_ROLE_ASSIGNMENT);
+      setUser({ ...MOCK_PROFILES[activeDevRole].user, role_assignments: [MOCK_PROFILES[activeDevRole].role] });
+      setPrimaryRole(MOCK_PROFILES[activeDevRole].role);
       return { error: null };
     }
     setIsLoading(true);
@@ -231,6 +245,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const isAuthenticated = DEV_MODE ? !!user : !!session && !!user;
 
+  const switchDevRole = (roleKey: MockProfileKey) => {
+    setActiveDevRole(roleKey);
+    const mock = MOCK_PROFILES[roleKey];
+    setUser({ ...mock.user, role_assignments: [mock.role] });
+    setPrimaryRole(mock.role);
+    // Add a slight reload simulation if we want, but simple state update works for React
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -248,9 +270,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         hasAnyRole,
         isSectionMember,
         isSectionHead,
+        switchDevRole,
       }}
     >
       {children}
+      {DEV_MODE && (
+        <div className="fixed bottom-4 right-4 bg-white border border-border shadow-xl rounded-xl p-3 z-[9999] text-xs">
+          <div className="font-semibold text-ink mb-2">Mock Role Switcher</div>
+          <div className="flex flex-col gap-1">
+            {(Object.keys(MOCK_PROFILES) as MockProfileKey[]).map(key => (
+              <button
+                key={key}
+                onClick={() => switchDevRole(key)}
+                className={`px-3 py-1.5 text-left rounded-md ${activeDevRole === key ? 'bg-primary text-white' : 'hover:bg-surface-alt'}`}
+              >
+                {key} ({MOCK_PROFILES[key].role.role_code})
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </AuthContext.Provider>
   );
 }

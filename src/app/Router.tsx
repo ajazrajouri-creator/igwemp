@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import { AppShell } from '../components/layout/AppShell';
 import { ROUTES } from '../lib/constants';
+import { useAuth } from '../core/auth/AuthContext';
 
 // Loading fallback
 const PageLoader = () => <div className="p-8 text-ink-muted text-center">Loading...</div>;
@@ -72,6 +73,34 @@ const AdminSystemPage = React.lazy(() => StubPages.then(m => ({ default: m.Admin
 const NotFoundPage = React.lazy(() => StubPages.then(m => ({ default: m.NotFoundPage })));
 const UnauthorizedPage = React.lazy(() => StubPages.then(m => ({ default: m.UnauthorizedPage })));
 
+// ─── Dynamic Default Route ────────────────────────────────────────────────────
+function DefaultRoute() {
+  const { primaryRole, isLoading } = useAuth();
+  
+  if (isLoading) return <PageLoader />;
+  
+  if (!primaryRole) return <Navigate to={ROUTES.WORK_QUEUE} replace />;
+
+  switch (primaryRole.role_code) {
+    case 'SCHOOL_EMPLOYEE':
+    case 'TEACHER':
+      return <Navigate to="/employee/self-service" replace />;
+    case 'SCHOOL_HEAD':
+    case 'HOI':
+      return <Navigate to="/school/dashboard" replace />;
+    case 'ZONAL_ADMIN':
+    case 'ZEO':
+      return <Navigate to="/zeo/review" replace />;
+    case 'DISTRICT_ADMIN':
+    case 'CEO':
+      return <Navigate to={ROUTES.WORK_QUEUE} replace />;
+    case 'SYS_ADMIN':
+      return <Navigate to="/admin" replace />;
+    default:
+      return <Navigate to={ROUTES.WORK_QUEUE} replace />;
+  }
+}
+
 const router = createBrowserRouter([
   {
     path: ROUTES.LOGIN,
@@ -82,11 +111,7 @@ const router = createBrowserRouter([
     element: <AppShell />,
     children: [
       // Role-based default redirect
-      // HOI/SCHOOL_HEAD → /school/dashboard
-      // SCHOOL_EMPLOYEE/TEACHER → /employee/self-service
-      // ZEO → /zeo/review
-      // Others → work-queue
-      { index: true, element: <Navigate to={ROUTES.WORK_QUEUE} replace /> },
+      { index: true, element: <DefaultRoute /> },
       
       { path: 'work-queue', element: <Suspense fallback={<PageLoader />}><MyWorkQueuePage /></Suspense> },
       { path: 'section-queue', element: <Suspense fallback={<PageLoader />}><SectionQueuePage /></Suspense> },

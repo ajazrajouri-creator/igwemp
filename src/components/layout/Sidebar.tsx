@@ -6,11 +6,11 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, ClipboardList, Inbox, Building2,
-  FileText, FolderOpen, Users, School, BarChart3,
-  Bell, Settings, ChevronDown, ChevronRight,
-  Shield, FileSignature, UserCheck, Briefcase,
-  AlertTriangle, CheckSquare, Clock, GitBranch,
+  LayoutDashboard, ClipboardList, Building2,
+  FileText, Users, BarChart3,
+  Settings, ChevronDown, ChevronRight,
+  Shield, FileSignature, Briefcase,
+  CheckSquare, Clock, GitBranch,
   GraduationCap, Home, UserCircle, Search,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
@@ -30,161 +30,93 @@ interface NavItem {
 }
 
 // ─── Navigation Config ────────────────────────────────────────
-function useNavItems(unreadCount: number, overdueCount: number) {
-  const { hasAnyRole } = useAuth();
+function useNavItems(overdueCount: number) {
+  const { hasRole, hasAnyRole } = useAuth();
+  
+  const isEmployee = hasRole('SCHOOL_EMPLOYEE') || hasRole('TEACHER');
+  const isHoi = hasRole('SCHOOL_HEAD') || hasRole('HOI');
+  const isZeo = hasRole('ZONAL_ADMIN') || hasRole('ZEO');
+  const isCeo = hasRole('DISTRICT_ADMIN') || hasRole('CEO');
+  const isAdmin = hasAnyRole(['PLATFORM_ADMIN', 'DEPT_ADMIN', 'DIRECTOR', 'CEO']);
 
-  const items: NavItem[] = [
-    // ── PRIMARY — Work Queue First [ADJ-06] ──────────────────
-    {
-      label: 'My Work Queue',
-      icon: <ClipboardList size={16} />,
-      to: ROUTES.WORK_QUEUE,
-      badge: overdueCount > 0 ? overdueCount : undefined,
-      badgeColor: 'bg-red-500',
-      highlight: true,
-    },
-    {
-      label: 'Section Queue',
-      icon: <Inbox size={16} />,
-      to: ROUTES.SECTION_QUEUE,
-      highlight: true,
-    },
-    {
-      label: 'Office Inbox',
-      icon: <Building2 size={16} />,
-      to: ROUTES.OFFICE_INBOX,
-    },
+  const items: NavItem[] = [];
 
-    // ── GOVERNANCE ────────────────────────────────────────────
-    {
-      label: 'Orders & Circulars',
-      icon: <FileSignature size={16} />,
-      children: [
-        { label: 'Published Orders', icon: <FileText size={14} />, to: ROUTES.ORDERS },
-        { label: 'My Drafts', icon: <Clock size={14} />, to: `${ROUTES.ORDERS}?tab=drafts` },
-        { label: 'Create Order', icon: <CheckSquare size={14} />, to: ROUTES.ORDERS_CREATE },
-      ],
-    },
-
-    // ── WORKFLOW ──────────────────────────────────────────────
-    {
-      label: 'Cases',
-      icon: <FolderOpen size={16} />,
-      children: [
-        { label: 'My Cases', icon: <Briefcase size={14} />, to: ROUTES.CASES },
-        { label: "Section's Cases", icon: <GitBranch size={14} />, to: `${ROUTES.CASES}?scope=section` },
-        { label: 'All Office Cases', icon: <AlertTriangle size={14} />, to: `${ROUTES.CASES}?scope=office` },
-      ],
-    },
-
-    // ── DELEGATION [ADJ-04] ───────────────────────────────────
-    {
-      label: 'Delegations',
-      icon: <UserCheck size={16} />,
-      to: ROUTES.DELEGATIONS,
-    },
-
-    // ── EDUCATION [Phase 4] ───────────────────────────────────
-    {
-      label: 'Employees',
-      icon: <Users size={16} />,
-      to: ROUTES.EMPLOYEES,
-    },
-    {
-      label: 'Schools',
-      icon: <School size={16} />,
-      to: ROUTES.SCHOOLS,
-    },
-    {
-      label: 'Students',
-      icon: <Users size={16} />,
-      children: [
-        { label: 'Student Register', icon: <FileText size={14} />, to: '/students' },
-        { label: 'Bulk Import', icon: <FileText size={14} />, to: '/students/import' },
-      ],
-    },
-    {
-      label: 'Enrollment',
-      icon: <CheckSquare size={16} />,
-      children: [
-        { label: 'Submit Enrollment', icon: <FileText size={14} />, to: '/enrollment/submission' },
-        { label: 'Review Submissions', icon: <Shield size={14} />, to: '/enrollment/review' },
-      ],
-    },
-    {
-      label: 'Post Census',
-      icon: <Building2 size={16} />,
-      children: [
-        { label: 'Submit Census', icon: <FileText size={14} />, to: '/posts/census' },
-        { label: 'Review Census', icon: <Shield size={14} />, to: '/posts/review' },
-      ],
-    },
-    {
-      label: 'Infrastructure',
-      icon: <Building2 size={16} />,
-      children: [
-        { label: 'Submit Census', icon: <FileText size={14} />, to: '/infrastructure/census' },
-        { label: 'Review Census', icon: <Shield size={14} />, to: '/infrastructure/review' },
-      ],
-    },
-
-    // ── S9.1 SCHOOL PORTAL (HOI) ─────────────────────────────
-    {
+  // ── HOI PORTAL ──────────────────────────────────────────────
+  if (isHoi) {
+    items.push({
       label: 'School Portal',
       icon: <Home size={16} />,
       children: [
         { label: 'School Dashboard', icon: <LayoutDashboard size={14} />, to: '/school/dashboard' },
+        { label: 'Student Register', icon: <FileText size={14} />, to: '/students' },
         { label: 'Add Student', icon: <GraduationCap size={14} />, to: '/students/new' },
+        { label: 'School Employees', icon: <Users size={14} />, to: ROUTES.EMPLOYEES },
       ],
-    },
+    });
+    
+    items.push({
+      label: 'Submissions',
+      icon: <CheckSquare size={16} />,
+      children: [
+        { label: 'Enrollment Submission', icon: <FileText size={14} />, to: '/enrollment/submission' },
+        { label: 'Infrastructure Census', icon: <Building2 size={14} />, to: '/infrastructure/census' },
+        { label: 'Post Census', icon: <ClipboardList size={14} />, to: '/posts/census' },
+      ],
+    });
+  }
 
-    // ── S9.1 MY PROFILE (Employee/Teacher) ───────────────────
-    {
+  // ── EMPLOYEE SELF-SERVICE ───────────────────────────────────
+  if (isEmployee || isHoi || isZeo || isCeo) {
+    items.push({
       label: 'My Profile',
       icon: <UserCircle size={16} />,
       children: [
         { label: 'View My Profile', icon: <UserCircle size={14} />, to: '/employee/self-service' },
         { label: 'Request Correction', icon: <FileText size={14} />, to: '/employee/update-request' },
       ],
-    },
+    });
+  }
 
-    // ── S9.1 REVIEW HUB (ZEO/CEO) ────────────────────────────
-    {
+  // ── ZEO / CEO REVIEW HUB ────────────────────────────────────
+  if (isZeo || isCeo) {
+    items.push({
       label: 'Review Hub',
       icon: <Search size={16} />,
       children: [
-        { label: 'ZEO Review Dashboard', icon: <Shield size={14} />, to: '/zeo/review' },
+        { label: 'Review Dashboard', icon: <Shield size={14} />, to: '/zeo/review' },
         { label: 'Enrollment Review', icon: <GraduationCap size={14} />, to: '/enrollment/review' },
         { label: 'Infrastructure Review', icon: <Building2 size={14} />, to: '/infrastructure/review' },
         { label: 'Post Census Review', icon: <ClipboardList size={14} />, to: '/posts/review' },
       ],
-    },
+    });
+  }
 
-    // ── REPORTING (secondary — ADJ-06) ───────────────────────
-    {
-      label: 'Reports & Analytics',
-      icon: <BarChart3 size={16} />,
+  // ── GOVERNANCE (For non-teachers) ───────────────────────────
+  if (isHoi || isZeo || isCeo || isAdmin) {
+    items.push({
+      label: 'Orders & Circulars',
+      icon: <FileSignature size={16} />,
       children: [
-        { label: 'My Dashboard', icon: <LayoutDashboard size={14} />, to: ROUTES.DASHBOARDS },
-        { label: 'Vacancy Dashboard', icon: <BarChart3 size={14} />, to: '/reports/vacancy' },
-        { label: 'Deficiency Dashboard', icon: <AlertTriangle size={14} />, to: '/reports/deficiency' },
-        { label: 'Enrollment Dashboard', icon: <BarChart3 size={14} />, to: '/reports/enrollment' },
-        { label: 'Standard Reports', icon: <FileText size={14} />, to: ROUTES.REPORTS },
+        { label: 'Published Orders', icon: <FileText size={14} />, to: ROUTES.ORDERS },
+        { label: 'My Drafts', icon: <Clock size={14} />, to: `${ROUTES.ORDERS}?tab=drafts` },
       ],
-    },
+    });
+  }
 
-    // ── NOTIFICATIONS ─────────────────────────────────────────
-    {
-      label: 'Notifications',
-      icon: <Bell size={16} />,
-      to: ROUTES.NOTIFICATIONS,
-      badge: unreadCount > 0 ? unreadCount : undefined,
-      badgeColor: 'bg-brand-500',
-    },
-  ];
+  // ── WORK QUEUE ──────────────────────────────────────────────
+  if (!isEmployee || isHoi || isZeo || isCeo) {
+    items.push({
+      label: 'My Work Queue',
+      icon: <ClipboardList size={16} />,
+      to: ROUTES.WORK_QUEUE,
+      badge: overdueCount > 0 ? overdueCount : undefined,
+      badgeColor: 'bg-red-500',
+      highlight: true,
+    });
+  }
 
-  // Admin items — restricted
-  if (hasAnyRole(['PLATFORM_ADMIN', 'DEPT_ADMIN', 'DIRECTOR', 'CEO'])) {
+  // ── SYSTEM ADMIN ────────────────────────────────────────────
+  if (isAdmin) {
     items.push({
       label: 'Administration',
       icon: <Settings size={16} />,
@@ -316,8 +248,8 @@ interface SidebarProps {
   overdueCount: number;
 }
 
-export function Sidebar({ collapsed, onToggle, unreadCount, overdueCount }: SidebarProps) {
-  const navItems = useNavItems(unreadCount, overdueCount);
+export function Sidebar({ collapsed, onToggle, overdueCount }: SidebarProps) {
+  const navItems = useNavItems(overdueCount);
 
   return (
     <aside
@@ -348,45 +280,11 @@ export function Sidebar({ collapsed, onToggle, unreadCount, overdueCount }: Side
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto overflow-x-hidden py-3 px-2 space-y-0.5">
-        {!collapsed && (
-          <div className="sidebar-section-label">Work</div>
-        )}
+        {!collapsed && <div className="sidebar-section-label">Navigation</div>}
 
-        {navItems.slice(0, 3).map((item) => (
+        {navItems.map((item) => (
           <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
         ))}
-
-        {!collapsed && <div className="sidebar-section-label mt-3">Governance</div>}
-        <div className={collapsed ? 'mt-2' : ''}>
-          {navItems.slice(3, 6).map((item) => (
-            <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
-          ))}
-        </div>
-
-        {!collapsed && <div className="sidebar-section-label mt-3">Education</div>}
-        <div className={collapsed ? 'mt-2' : ''}>
-          {navItems.slice(6, 12).map((item) => (
-            <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
-          ))}
-        </div>
-
-        {!collapsed && <div className="sidebar-section-label mt-3">Reporting</div>}
-        <div className={collapsed ? 'mt-2' : ''}>
-          {navItems.slice(12, 14).map((item) => (
-            <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
-          ))}
-        </div>
-
-        {navItems.length > 14 && (
-          <>
-            {!collapsed && <div className="sidebar-section-label mt-3">System</div>}
-            <div className={collapsed ? 'mt-2' : ''}>
-              {navItems.slice(14).map((item) => (
-                <NavItemComponent key={item.label} item={item} collapsed={collapsed} />
-              ))}
-            </div>
-          </>
-        )}
       </nav>
 
       {/* Footer */}
