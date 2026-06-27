@@ -49,32 +49,11 @@ jobs:
       - name: Start Supabase Local Stack
         run: supabase start > start_log.txt 2>&1 || true
 
-      - name: Failure Diagnostics
-        if: always()
-        run: |
-          echo "=== SUPABASE START LOG ===" > diag_log.txt
-          cat start_log.txt >> diag_log.txt
-          echo "=== DOCKER PS ===" >> diag_log.txt
-          docker ps -a >> diag_log.txt 2>&1 || true
-          echo "=== SUPABASE STATUS ===" >> diag_log.txt
-          supabase status >> diag_log.txt 2>&1 || true
-          echo "=== SUPABASE LOGS ===" >> diag_log.txt
-          docker logs supabase_db_igwemp >> diag_log.txt 2>&1 || true
-
-      - name: Commit Logs
-        if: always()
-        run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add diag_log.txt
-          git commit -m "chore: add diag logs [skip ci]" || true
-          git push
-
       - name: Reset Database and Apply Migrations & Seeds
-        run: supabase db reset
+        run: supabase db reset > reset_log.txt 2>&1
 
       - name: Run pgTAP Database Tests
-        run: supabase test db
+        run: supabase test db > test_log.txt 2>&1
 
       - name: Serve Edge Functions (Background)
         run: supabase functions serve employee-import --no-verify-jwt &
@@ -94,6 +73,31 @@ jobs:
         with:
           name: supabase-logs
           path: supabase/logs/
+
+      - name: Failure Diagnostics
+        if: always()
+        run: |
+          echo "=== SUPABASE START LOG ===" > diag_log.txt
+          cat start_log.txt >> diag_log.txt 2>&1 || true
+          echo "=== SUPABASE RESET LOG ===" >> diag_log.txt
+          cat reset_log.txt >> diag_log.txt 2>&1 || true
+          echo "=== SUPABASE TEST LOG ===" >> diag_log.txt
+          cat test_log.txt >> diag_log.txt 2>&1 || true
+          echo "=== DOCKER PS ===" >> diag_log.txt
+          docker ps -a >> diag_log.txt 2>&1 || true
+          echo "=== SUPABASE STATUS ===" >> diag_log.txt
+          supabase status >> diag_log.txt 2>&1 || true
+          echo "=== SUPABASE LOGS ===" >> diag_log.txt
+          docker logs supabase_db_igwemp >> diag_log.txt 2>&1 || true
+
+      - name: Commit Logs
+        if: always()
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add diag_log.txt
+          git commit -m "chore: add diag logs [skip ci]" || true
+          git push
 
       - name: Stop Supabase Stack
         if: always()
