@@ -11,7 +11,7 @@ ALTER TABLE public.person_parties
 -- 2. Create the apply RPC
 CREATE OR REPLACE FUNCTION public.apply_approved_employee_change_request(
   p_request_id uuid
-) RETURNS void
+) RETURNS jsonb
 LANGUAGE plpgsql SECURITY DEFINER SET search_path = ''
 AS $$
 DECLARE
@@ -73,6 +73,8 @@ BEGIN
   END IF;
   -- If not auto-apply (e.g. NAME_CORRECTION, DOB_CORRECTION, POSTING_CORRECTION, SERVICE_RECORD_CORRECTION),
   -- it remains APPROVED and awaits manual system/DBA verification for sensitive records.
+  
+  RETURN jsonb_build_object('success', true, 'message', 'Changes applied successfully.');
 END;
 $$;
 
