@@ -754,8 +754,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
 ALTER TABLE public.academic_sessions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "tenant_isolation" ON public.academic_sessions FOR ALL USING (tenant_id = public.get_current_tenant_id());
 CREATE POLICY "academic_sessions_select" ON public.academic_sessions FOR SELECT USING (true);
-CREATE POLICY "academic_sessions_insert" ON public.academic_sessions FOR INSERT WITH CHECK (public.has_role('PLATFORM_ADMIN') OR public.has_role('TENANT_ADMIN'));
-CREATE POLICY "academic_sessions_update" ON public.academic_sessions FOR UPDATE USING (public.has_role('PLATFORM_ADMIN') OR public.has_role('TENANT_ADMIN'));
+CREATE POLICY "academic_sessions_insert" ON public.academic_sessions FOR INSERT WITH CHECK (public.get_current_role() IN ('PLATFORM_ADMIN', 'TENANT_ADMIN'));
+CREATE POLICY "academic_sessions_update" ON public.academic_sessions FOR UPDATE USING (public.get_current_role() IN ('PLATFORM_ADMIN', 'TENANT_ADMIN'));
 CREATE POLICY "academic_sessions_delete" ON public.academic_sessions FOR DELETE USING (false);
 
 -- student_profiles
@@ -765,7 +765,7 @@ CREATE POLICY "student_profiles_select" ON public.student_profiles FOR SELECT US
   EXISTS (
     SELECT 1 FROM public.student_enrollments e 
     WHERE e.student_id = student_profiles.id AND public.can_access_office(e.office_id)
-  ) OR public.has_role('PLATFORM_ADMIN') OR public.has_role('TENANT_ADMIN')
+  ) OR public.get_current_role() IN ('PLATFORM_ADMIN', 'TENANT_ADMIN')
 );
 -- We allow HOI to insert/update based on them creating the enrollment later, so we check if they belong to a school
 CREATE POLICY "student_profiles_insert" ON public.student_profiles FOR INSERT WITH CHECK (
@@ -820,10 +820,10 @@ ALTER TABLE public.school_class_configurations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "tenant_isolation" ON public.school_class_configurations FOR ALL USING (tenant_id = public.get_current_tenant_id());
 CREATE POLICY "class_config_select" ON public.school_class_configurations FOR SELECT USING (public.can_access_office(office_id));
 CREATE POLICY "class_config_insert" ON public.school_class_configurations FOR INSERT WITH CHECK (
-  public.can_access_office(office_id) AND (public.has_role('PLATFORM_ADMIN') OR public.has_role('TENANT_ADMIN') OR public.has_role('ZEO') OR public.has_role('CEO'))
+  public.can_access_office(office_id) AND (public.get_current_role() IN ('PLATFORM_ADMIN', 'TENANT_ADMIN', 'ZEO', 'CEO'))
 );
 CREATE POLICY "class_config_update" ON public.school_class_configurations FOR UPDATE USING (
-  public.can_access_office(office_id) AND (public.has_role('PLATFORM_ADMIN') OR public.has_role('TENANT_ADMIN') OR public.has_role('ZEO') OR public.has_role('CEO'))
+  public.can_access_office(office_id) AND (public.get_current_role() IN ('PLATFORM_ADMIN', 'TENANT_ADMIN', 'ZEO', 'CEO'))
 );
 CREATE POLICY "class_config_delete" ON public.school_class_configurations FOR DELETE USING (false);
 
