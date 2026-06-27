@@ -37,6 +37,11 @@ CREATE POLICY "Platform Admins can manage tenants"
   -- Allow read for now, lock down later when admin roles exist
   USING (true);
 
+-- Seed Default Tenant to allow migrations to use it
+INSERT INTO public.tenants (id, code, name, is_active)
+VALUES ('00000000-0000-0000-0000-000000000001', 'DEFAULT', 'Default System Tenant', true)
+ON CONFLICT (code) DO NOTHING;
+
 -- 4. User Accounts Stub (Needed for FKs and RLS)
 CREATE TABLE public.user_accounts (
   id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
