@@ -137,11 +137,11 @@ BEGIN
   -- Create auth users
   INSERT INTO auth.users (id, email, encrypted_password, email_confirmed_at, instance_id, aud, role, created_at, updated_at)
   VALUES
-    (v_ceo_auth_id, 'ceo@example.com', crypt('password123', gen_salt('bf')), now(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', now(), now()),
-    (v_zeo_a_auth_id, 'zeo_zone_a@example.com', crypt('password123', gen_salt('bf')), now(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', now(), now()),
-    (v_zeo_b_auth_id, 'zeo_zone_b@example.com', crypt('password123', gen_salt('bf')), now(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', now(), now()),
-    (v_hoi_auth_id, 'hoi@example.com', crypt('password123', gen_salt('bf')), now(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', now(), now()),
-    (v_teacher_auth_id, 'teacher@example.com', crypt('password123', gen_salt('bf')), now(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', now(), now())
+    (v_ceo_auth_id, 'ceo@example.com', 'dummy_hash', now(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', now(), now()),
+    (v_zeo_a_auth_id, 'zeo_zone_a@example.com', 'dummy_hash', now(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', now(), now()),
+    (v_zeo_b_auth_id, 'zeo_zone_b@example.com', 'dummy_hash', now(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', now(), now()),
+    (v_hoi_auth_id, 'hoi@example.com', 'dummy_hash', now(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', now(), now()),
+    (v_teacher_auth_id, 'teacher@example.com', 'dummy_hash', now(), '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', now(), now())
   ON CONFLICT (id) DO NOTHING;
 
   -- Create parties
