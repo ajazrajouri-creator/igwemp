@@ -90,7 +90,7 @@ BEGIN
   UPDATE public.post_census_submissions SET status = 'APPROVED' WHERE id = v_submission_id;
 
   -- Approve and execute mapping via new atomic RPC
-  v_response := public.approve_post_census_submission(v_submission_id);
+  PERFORM public.approve_post_census_submission(v_submission_id);
 END $$;
 
 -- Assert 1: Approved census created exactly 3 physical posts

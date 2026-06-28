@@ -38,9 +38,9 @@ BEGIN
   SELECT id INTO v_ceo_id FROM auth.users WHERE email = 'ceo@example.com';
   SELECT id INTO v_zeo_id FROM auth.users WHERE email = 'zeo_zone_a@example.com';
   SELECT id INTO v_hoi_id FROM auth.users WHERE email = 'hoi@example.com';
-  SELECT id INTO v_ps_office_id FROM public.offices WHERE name = 'Primary School A';
-  SELECT id INTO v_ms_office_id FROM public.offices WHERE name = 'Middle School Zone A';
-  SELECT id INTO v_hss_office_id FROM public.offices WHERE name = 'HSS Zone B';
+  SELECT id INTO v_ps_office_id FROM public.offices WHERE office_name = 'Primary School A';
+  SELECT id INTO v_ms_office_id FROM public.offices WHERE office_name = 'Middle School Zone A';
+  SELECT id INTO v_hss_office_id FROM public.offices WHERE office_name = 'HSS Zone B';
 
   -- Get master data ids
   SELECT id INTO v_class_5_id FROM public.master_data_items WHERE code = 'CLASS_5' AND category_id = (SELECT id FROM public.master_data_categories WHERE code = 'CLASS_LEVEL');

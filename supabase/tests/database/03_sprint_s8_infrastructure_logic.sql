@@ -21,8 +21,8 @@ BEGIN
   SELECT id INTO v_tenant_id FROM public.tenants LIMIT 1;
   SELECT id INTO v_ceo_id FROM auth.users WHERE email = 'ceo@example.com';
   SELECT id INTO v_hoi_id FROM auth.users WHERE email = 'hoi@example.com';
-  SELECT id INTO v_ceo_office_id FROM public.offices WHERE name = 'CEO Office';
-  SELECT id INTO v_school_office_id FROM public.offices WHERE name = 'Primary School A';
+  SELECT id INTO v_ceo_office_id FROM public.offices WHERE office_name = 'CEO Rajouri';
+  SELECT id INTO v_school_office_id FROM public.offices WHERE office_name = 'Primary School A';
 
   -- Create a census cycle
   INSERT INTO public.infrastructure_census_cycles (id, tenant_id, title, status)
